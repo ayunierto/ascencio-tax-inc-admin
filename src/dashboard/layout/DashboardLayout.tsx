@@ -1,6 +1,10 @@
 import { Separator } from '@radix-ui/react-separator';
-import { AppSidebar } from '../app-sidebar';
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '../ui/sidebar';
+import { AppSidebar } from '../../components/app-sidebar';
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from '../../components/ui/sidebar';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,9 +12,10 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '../ui/breadcrumb';
+} from '../../components/ui/breadcrumb';
+import { Outlet } from 'react-router';
 
-export const Dashboard = () => {
+export const DashboardLayout = () => {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -35,12 +40,13 @@ export const Dashboard = () => {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+          <Outlet />
+          {/* <div className="grid auto-rows-min gap-4 md:grid-cols-3">
             <div className="aspect-video rounded-xl bg-muted/50" />
             <div className="aspect-video rounded-xl bg-muted/50" />
             <div className="aspect-video rounded-xl bg-muted/50" />
           </div>
-          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
+          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" /> */}
         </div>
       </SidebarInset>
     </SidebarProvider>
