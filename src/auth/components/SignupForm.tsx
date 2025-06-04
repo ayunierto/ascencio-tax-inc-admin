@@ -9,8 +9,9 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Link } from 'react-router';
 
-export const LoginForm = ({
+export const SignupForm = ({
   className,
   ...props
 }: React.ComponentProps<'div'>) => {
@@ -18,9 +19,9 @@ export const LoginForm = ({
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
+          <CardTitle className="text-xl">Welcome</CardTitle>
           <CardDescription>
-            Login with your Apple or Google account
+            Register with your Apple or Google account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -34,7 +35,7 @@ export const LoginForm = ({
                       fill="currentColor"
                     />
                   </svg>
-                  Login with Apple
+                  Continue with Apple
                 </Button>
                 <Button variant="outline" className="w-full">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -43,7 +44,7 @@ export const LoginForm = ({
                       fill="currentColor"
                     />
                   </svg>
-                  Login with Google
+                  Continue with Google
                 </Button>
               </div>
               <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
@@ -53,35 +54,94 @@ export const LoginForm = ({
               </div>
               <div className="grid gap-6">
                 <div className="grid gap-3">
+                  <Label htmlFor="firstName">Name</Label>
+                  <Input
+                    id="firstName"
+                    type="text"
+                    placeholder="John"
+                    required
+                    autoComplete="given-name"
+                  />
+                </div>
+                <div className="grid gap-3">
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Input
+                    id="lastName"
+                    type="text"
+                    placeholder="Doe"
+                    required
+                    autoComplete="family-name"
+                  />
+                </div>
+
+                <div className="grid gap-3">
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
                     type="email"
                     placeholder="m@example.com"
                     required
+                    autoComplete="email"
+                  />
+                </div>
+
+                <div className="flex flex-row gap-3">
+                  <div className="grid gap-3">
+                    <Label htmlFor="countryCode">Country Code</Label>
+                    <Input
+                      id="countryCode"
+                      type="text"
+                      placeholder="+1"
+                      required
+                      autoComplete="country"
+                    />
+                  </div>
+                  <div className="grid gap-3">
+                    <Label htmlFor="phoneNumber">Phone Number</Label>
+                    <Input
+                      id="phoneNumber"
+                      type="text"
+                      placeholder="123-456-7890"
+                      required
+                      autoComplete="tel"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-3">
+                  <div className="flex items-center">
+                    <Label htmlFor="password">Password</Label>
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    required
+                    autoComplete="new-password"
                   />
                 </div>
                 <div className="grid gap-3">
                   <div className="flex items-center">
-                    <Label htmlFor="password">Password</Label>
-                    <a
-                      href="#"
-                      className="ml-auto text-sm underline-offset-4 hover:underline"
-                    >
-                      Forgot your password?
-                    </a>
+                    <Label htmlFor="confirmPassword">Confirm Password</Label>
                   </div>
-                  <Input id="password" type="password" required />
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    required
+                    autoComplete="new-password"
+                  />
                 </div>
                 <Button type="submit" className="w-full">
-                  Login
+                  Register
                 </Button>
               </div>
               <div className="text-center text-sm">
-                Don&apos;t have an account?{' '}
-                <a href="#" className="underline underline-offset-4">
-                  Sign up
-                </a>
+                Already have an account?{' '}
+                <Link
+                  to="/auth/signin"
+                  className="underline underline-offset-4 font-bold text-primary hover:text-primary/80"
+                >
+                  Sign in
+                </Link>
               </div>
             </div>
           </form>

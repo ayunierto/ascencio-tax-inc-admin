@@ -1,6 +1,4 @@
 import { Separator } from '@radix-ui/react-separator';
-import { AppSidebar } from '../app-sidebar';
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '../ui/sidebar';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,9 +6,15 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '../ui/breadcrumb';
+} from '../../components/ui/breadcrumb';
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@/components/ui/sidebar';
+import { AppSidebar } from '../components/app-sidebar';
 
-export const Dashboard = () => {
+export const DashboardLayout = () => {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -22,9 +26,7 @@ export const Dashboard = () => {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
+                  <BreadcrumbLink href="#">Dashboard</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
