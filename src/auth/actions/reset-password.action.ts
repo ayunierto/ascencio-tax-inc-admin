@@ -26,7 +26,6 @@ export const resetPasswordAction = async ({
   newPassword,
 }: ResetPasswordRequest): Promise<ResetPasswordResponse | Exception> => {
   try {
-<<<<<<< HEAD
     const response = await httpClient.post<ResetPasswordResponse>(
       'auth/reset-password',
       {
@@ -39,24 +38,5 @@ export const resetPasswordAction = async ({
     console.error('Error caught in resetPasswordAction:', error);
 
     return handleErrors(error);
-=======
-    const API_URL = process.env.EXPO_PUBLIC_API_URL;
-    if (!API_URL) throw new Error('No API_URL found');
-
-    const response = await fetch(`${API_URL}/auth/reset-password`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ code, email, newPassword }),
-    });
-
-    const data: ResetPasswordResponse | Exception = await response.json();
-
-    return data;
-  } catch (error) {
-    console.error(error);
-    throw new Error('Reset Password: Network request failed');
->>>>>>> 6f762de07d660c93e699900d14679dabc3eb1f0c
   }
 };

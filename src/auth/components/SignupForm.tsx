@@ -130,7 +130,7 @@ export const SignupForm = ({
                     autoComplete="new-password"
                   />
                 </div>
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full" variant={'outline'}>
                   Register
                 </Button>
               </div>
