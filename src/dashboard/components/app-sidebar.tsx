@@ -21,7 +21,7 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 import { useAuthStore } from '@/auth/store/useAuthStore';
-import { NavLink } from 'react-router';
+import { NavLink, useLocation } from 'react-router';
 import { useState } from 'react';
 
 const navItems = [
@@ -148,8 +148,9 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const location = useLocation();
   const { user } = useAuthStore();
-  const [activeLink, setActiveLink] = useState<string>('/dashboard');
+  const [activeLink, setActiveLink] = useState<string>(location.pathname);
 
   if (!user) {
     throw new Error('User not authenticated');

@@ -15,10 +15,26 @@ import {
 import { AppSidebar } from '../components/app-sidebar';
 import { Navigate, Outlet } from 'react-router';
 import { useAuthStore } from '@/auth/store/useAuthStore';
+import { toast } from 'sonner';
 
 export const DashboardLayout = () => {
-  const { status } = useAuthStore();
-  if (status === 'unauthenticated') return Navigate({ to: '/auth' });
+  const { status, user, logout } = useAuthStore();
+  if (status === 'unauthenticated') {
+    return Navigate({ to: '/auth' });
+  }
+
+  if (user) {
+    if (!user.roles.includes('admin')) {
+      toast.error(
+        'You do not have permission to access this page. Please contact your administrator.',
+        {
+          position: 'top-center',
+        }
+      );
+      logout();
+      return Navigate({ to: '/auth' });
+    }
+  }
 
   return (
     <SidebarProvider>

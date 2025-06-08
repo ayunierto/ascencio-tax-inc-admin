@@ -18,7 +18,7 @@ function App() {
 
   // If status is 'checking', we can show a loading state or spinner
   if (status === 'checking') {
-    return <Loader />;
+    return <Loader fullScreen={true} />;
   }
 
   return (

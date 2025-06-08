@@ -3,16 +3,6 @@ import { SigninResponse } from '../interfaces';
 import { httpClient } from '@/adapters/http/httpClient.adapter';
 import { handleErrors } from '../utils';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function isApiErrorResponse(obj: any): obj is Exception {
-  return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    typeof obj.message === 'string' &&
-    typeof obj.statusCode === 'number'
-  );
-}
-
 /**
  * Checks the authentication status of the user by making a GET request to 'auth/check-status' endpoint.
  *
@@ -34,10 +24,6 @@ export const checkStatusAction = async (): Promise<
       'auth/check-status',
       {}
     );
-
-    if (isApiErrorResponse(response)) {
-      return response;
-    }
 
     return response;
   } catch (error) {

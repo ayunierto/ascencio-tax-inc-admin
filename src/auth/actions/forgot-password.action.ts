@@ -33,7 +33,7 @@ export const forgotPasswordAction = async ({
 
     return response;
   } catch (error) {
-    console.error('Error ca in forgotPasswordAction:', error);
+    console.error('Error in forgotPasswordAction:', error);
     return handleErrors(error);
   }
 };

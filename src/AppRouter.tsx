@@ -1,15 +1,19 @@
 import { lazy, Suspense } from 'react';
 
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
+
 import { AuthLayout } from './auth/layout/AuthLayout';
 import { useAuthStore } from './auth/store/useAuthStore';
 import { Loader } from '@/components/Loader';
-import { DashboardPage, ServicesPage } from './dashboard/pages';
+import {
+  AppointmentsPage,
+  DashboardPage,
+  ServicesPage,
+  SettingsPage,
+  UsersPage,
+} from './dashboard/pages';
 import { SignupPage, SigninPage } from './auth/pages';
 import { PrivateRoute } from './auth/components';
-import { AppointmentsPage } from './dashboard/pages/';
-import SettingsPage from './dashboard/pages/SettingsPage';
-import UsersPage from './dashboard/pages/UsersPage';
 
 const DashboardLayout = lazy(async () => {
   return import('./dashboard/layout/DashboardLayout');
@@ -29,7 +33,7 @@ export const AscencioTaxApp = () => {
         <Route
           path="/dashboard"
           element={
-            <Suspense fallback={<Loader />}>
+            <Suspense fallback={<Loader fullScreen />}>
               <PrivateRoute isAuthenticated={status === 'authenticated'}>
                 <DashboardLayout />
               </PrivateRoute>
