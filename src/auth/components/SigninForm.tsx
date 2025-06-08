@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Link, Navigate } from 'react-router';
+import { Link } from 'react-router';
 import { useMutation } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
 import {
@@ -15,17 +15,12 @@ import {
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useAuthStore } from '../store/useAuthStore';
 import { SigninResponse } from '../interfaces';
 import { Exception } from '@/interfaces';
+import { CircleX, LogIn } from 'lucide-react';
 
 const signinFormSchema = z.object({
   email: z.string().email({
@@ -57,35 +52,44 @@ export const SigninForm = ({
   const signinMutation = useMutation({
     mutationFn: signin,
     onSuccess: async (data: SigninResponse | Exception) => {
-      console.log('Login init');
       if ('error' in data) {
         toast('Error', {
           description: data.message,
           dismissible: false,
           position: 'top-center',
+          icon: <CircleX size={18} />,
         });
         return;
       }
-      console.log('Login success', data);
 
-      // Navigate({ to: '/dashboard', replace: true });
+      toast('Login successful', {
+        icon: <LogIn size={18} />,
+        description: 'Welcome back!',
+        position: 'top-center',
+      });
     },
   });
 
   return (
-    <div className={cn('flex flex-col gap-6', className)} {...props}>
-      <Card>
+    <div
+      className={cn(
+        'flex flex-col gap-6 items-center justify-center',
+        className
+      )}
+      {...props}
+    >
+      <Card className="max-w-sm w-full">
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
-          <CardDescription>
-            Login with your Apple or Google account
-          </CardDescription>
+          <CardTitle className="text-xl">Sign In</CardTitle>
+          {/* <CardDescription>
+              Login with your Apple or Google account
+            </CardDescription> */}
         </CardHeader>
         <CardContent>
           <Form {...signinForm}>
             <form onSubmit={signinForm.handleSubmit(onSignin)}>
               <div className="grid gap-6">
-                <div className="flex flex-col gap-4">
+                {/* <div className="flex flex-col gap-4">
                   <Button variant="outline" className="w-full">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                       <path
@@ -109,7 +113,7 @@ export const SigninForm = ({
                   <span className="bg-card text-muted-foreground relative z-10 px-2">
                     Or continue with
                   </span>
-                </div>
+                </div> */}
 
                 <FormField
                   control={signinForm.control}
@@ -173,7 +177,7 @@ export const SigninForm = ({
                   Login
                 </Button>
 
-                <div className="text-center text-sm">
+                {/* <div className="text-center text-sm">
                   Don&apos;t have an account?{' '}
                   <Link
                     to={'/auth/signup'}
@@ -181,16 +185,16 @@ export const SigninForm = ({
                   >
                     Sign up
                   </Link>
-                </div>
+                </div> */}
               </div>
             </form>
           </Form>
         </CardContent>
       </Card>
-      <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
+      {/* <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
         By clicking continue, you agree to our <a href="#">Terms of Service</a>{' '}
         and <a href="#">Privacy Policy</a>.
-      </div>
+      </div> */}
     </div>
   );
 };

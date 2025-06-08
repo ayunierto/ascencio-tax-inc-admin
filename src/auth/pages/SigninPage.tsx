@@ -1,14 +1,21 @@
-import { Loader } from '@/components/Loader';
 import { SigninForm } from '../components';
 import { useAuthStore } from '../store/useAuthStore';
-import { Navigate } from 'react-router';
+import { useNavigate } from 'react-router';
+import { useEffect } from 'react';
 
 export const SigninPage = () => {
   const { status } = useAuthStore();
+  const navigate = useNavigate();
 
-  if (status === 'checking') return <Loader />;
+  useEffect(() => {
+    if (status === 'authenticated') {
+      navigate('/dashboard');
+    }
+  }, [status, navigate]);
 
-  if (status === 'authenticated') return Navigate({ to: '/dashboard' });
+  if (status === 'authenticated') {
+    return null;
+  }
 
   return <SigninForm />;
 };

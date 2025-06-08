@@ -13,9 +13,13 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { AppSidebar } from '../components/app-sidebar';
-import { Outlet } from 'react-router';
+import { Navigate, Outlet } from 'react-router';
+import { useAuthStore } from '@/auth/store/useAuthStore';
 
 export const DashboardLayout = () => {
+  const { status } = useAuthStore();
+  if (status === 'unauthenticated') return Navigate({ to: '/auth' });
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -50,3 +54,5 @@ export const DashboardLayout = () => {
     </SidebarProvider>
   );
 };
+
+export default DashboardLayout;
