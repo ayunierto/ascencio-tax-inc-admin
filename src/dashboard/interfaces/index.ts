@@ -1,1 +1,1 @@
-export * from './AppointmentResponse.interface';
+
