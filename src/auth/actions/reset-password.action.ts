@@ -29,7 +29,11 @@ export const resetPasswordAction = async ({
     const response = await httpClient.post<ResetPasswordResponse>(
       'auth/reset-password',
       {
-        body: { code, email, newPassword },
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({ code, email, newPassword }),
       }
     );
 

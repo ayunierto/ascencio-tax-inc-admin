@@ -27,7 +27,11 @@ export const signupAction = async (
 
   try {
     const response = await httpClient.post<SignUpResponse>('auth/signup', {
-      body: newUser,
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify(newUser),
     });
 
     return response;

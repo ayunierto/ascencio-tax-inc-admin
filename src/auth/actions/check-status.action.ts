@@ -21,8 +21,7 @@ export const checkStatusAction = async (): Promise<
 > => {
   try {
     const response = await httpClient.get<SigninResponse | Exception>(
-      'auth/check-status',
-      {}
+      'auth/check-status'
     );
 
     return response;

@@ -1,29 +1,31 @@
 import { useEffect } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import { BrowserRouter, Routes, Route } from 'react-router';
-
-import { DashboardLayout } from './dashboard/layout/DashboardLayout';
+import { AppRouter } from './AppRouter';
+import { ThemeProvider } from './components/ThemeProvider';
+import { Toaster } from '@/components/ui/sonner';
 import { useAuthStore } from './auth/store/useAuthStore';
+import { Loader } from './components/Loader';
+
+const queryClient = new QueryClient();
 
 export const AscencioTaxApp = () => {
-  const { checkStatus } = useAuthStore();
+  const { status, checkStatus } = useAuthStore();
 
   useEffect(() => {
-    const fetchStatus = async () => {
-      const status = await checkStatus();
-      console.log('Status:', status);
-    };
-    fetchStatus();
+    checkStatus();
   }, [checkStatus]);
 
+  if (status === 'checking') {
+    return <Loader fullScreen={true} />;
+  }
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<DashboardLayout />}>
-          <Route index path="/" element={<div>Dashboard Home</div>} />
-          <Route path="settings" element={<div>Dashboard Settings</div>} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
+        <AppRouter />
+        <Toaster />
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 };

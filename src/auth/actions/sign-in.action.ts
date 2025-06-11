@@ -25,7 +25,11 @@ export const signinAction = async (
 ): Promise<SigninResponse | Exception> => {
   try {
     const response = await httpClient.post<SigninResponse>('auth/signin', {
-      body: credentials,
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify(credentials),
     });
     return response;
   } catch (error) {

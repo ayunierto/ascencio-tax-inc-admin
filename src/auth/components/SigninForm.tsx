@@ -80,15 +80,19 @@ export const SigninForm = ({
     >
       <Card className="max-w-sm w-full">
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Sign In</CardTitle>
-          {/* <CardDescription>
-              Login with your Apple or Google account
-            </CardDescription> */}
+          <CardTitle className="text-xl">Please Sign In</CardTitle>
+          <div className="flex items-center justify-center pt-2">
+            <img
+              src="/logo.png"
+              alt="Logo"
+              className="rounded-lg w-14 h-w-14"
+            />
+          </div>
         </CardHeader>
         <CardContent>
           <Form {...signinForm}>
             <form onSubmit={signinForm.handleSubmit(onSignin)}>
-              <div className="grid gap-6">
+              <div className="grid gap-4">
                 {/* <div className="flex flex-col gap-4">
                   <Button variant="outline" className="w-full">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -125,7 +129,7 @@ export const SigninForm = ({
                         <Input
                           id="email"
                           type="email"
-                          placeholder="m@example.com"
+                          placeholder="example@domain.com"
                           required
                           autoComplete="username"
                           {...field}

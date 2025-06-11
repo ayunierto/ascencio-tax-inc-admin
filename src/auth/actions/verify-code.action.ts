@@ -27,7 +27,13 @@ export const verifyCodeAction = async ({
   try {
     const response = await httpClient.post<VerifyCodeResponse>(
       'auth/verify-code',
-      { body: { code, email } }
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({ code, email }),
+      }
     );
 
     return response;

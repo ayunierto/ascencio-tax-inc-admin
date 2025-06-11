@@ -1,5 +1,5 @@
 import { ToggleTheme } from '@/components/ToggleTheme';
-import { Link, Outlet } from 'react-router';
+import { Outlet } from 'react-router';
 
 export const AuthLayout = () => {
   return (
@@ -10,14 +10,6 @@ export const AuthLayout = () => {
 
       <div className="flex flex-col items-center justify-center gap-6 p-6 md:p-10 flex-grow">
         <div className="flex w-full flex-col gap-6">
-          <Link
-            to="/"
-            className="flex items-center gap-2 self-center font-medium"
-          >
-            <img src="/logo.png" alt="Logo" className="rounded-lg w-9 h-9" />
-            Ascencio Tax Inc.
-          </Link>
-
           <Outlet />
         </div>
       </div>

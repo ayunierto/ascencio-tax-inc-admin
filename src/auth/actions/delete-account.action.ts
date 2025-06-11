@@ -27,7 +27,11 @@ export const deleteAccountAction = async ({
     const response = await httpClient.post<DeleteAccountResponse>(
       'auth/delete-account',
       {
-        body: { password },
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({ password }),
       }
     );
 

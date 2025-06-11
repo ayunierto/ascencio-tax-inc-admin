@@ -27,7 +27,11 @@ export const forgotPasswordAction = async ({
     const response = await httpClient.post<ForgotPasswordResponse>(
       'auth/forgot-password',
       {
-        body: { email },
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({ email }),
       }
     );
 

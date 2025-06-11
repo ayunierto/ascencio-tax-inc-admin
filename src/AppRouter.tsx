@@ -5,21 +5,33 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 import { AuthLayout } from './auth/layout/AuthLayout';
 import { useAuthStore } from './auth/store/useAuthStore';
 import { Loader } from '@/components/Loader';
-import {
-  AppointmentsPage,
-  DashboardPage,
-  ServicesPage,
-  SettingsPage,
-  UsersPage,
-} from './dashboard/pages';
-import { SignupPage, SigninPage } from './auth/pages';
+
+import { SigninPage } from './auth/pages';
 import { PrivateRoute } from './auth/components';
 
 const DashboardLayout = lazy(async () => {
-  return import('./dashboard/layout/DashboardLayout');
+  return import('./dashboard/layouts/DashboardLayout');
+});
+const DashboardPage = lazy(async () => {
+  return import('./dashboard/pages/DashboardPage');
+});
+const AppointmentsPage = lazy(async () => {
+  return import('./dashboard/pages/appointments/pages/AppointmentsPage');
+});
+const ServicesPage = lazy(async () => {
+  return import('./dashboard/pages/services/pages/ServicesPage');
+});
+const SettingsPage = lazy(async () => {
+  return import('./dashboard/pages/settings/pages/SettingsPage');
+});
+const UsersPage = lazy(async () => {
+  return import('./dashboard/pages/users/pages//UsersPage');
+});
+const SignupPage = lazy(async () => {
+  return import('./auth/pages/SignupPage');
 });
 
-export const AscencioTaxApp = () => {
+export const AppRouter = () => {
   const { status } = useAuthStore();
 
   return (

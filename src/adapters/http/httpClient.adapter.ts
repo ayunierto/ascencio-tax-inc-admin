@@ -12,15 +12,20 @@ export class HttpClientAdapter implements HttpAdapter {
   private readonly baseUrl: string;
 
   constructor() {
-    let apiUrl = import.meta.env.VITE_API_URL;
+    let apiUrl: string = import.meta.env.VITE_API_URL;
     if (!apiUrl) {
       throw new Error(
         'HttpClientAdapter: VITE_API_URL environment variable is not set.'
       );
     }
 
-    // Make sure the URL ends with a slash '/'
+    if (!apiUrl.startsWith('http'))
+      throw new Error(
+        'HttpClientAdapter: VITE_API_URL environment must start with the http or https protocol.'
+      );
+
     if (!apiUrl.endsWith('/')) {
+      // Make sure the URL ends with a slash '/'
       apiUrl += '/';
     }
     this.baseUrl = apiUrl;
@@ -36,10 +41,10 @@ export class HttpClientAdapter implements HttpAdapter {
     return null;
   }
 
-  private async _request<T>(
+  private async request<T>(
     endpoint: string,
     options: RequestOptions,
-    method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE'
+    method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
   ): Promise<T> {
     const url = new URL(endpoint, this.baseUrl);
 
@@ -52,7 +57,6 @@ export class HttpClientAdapter implements HttpAdapter {
     const fetchOptions: RequestInit = {
       method: method,
       headers: {
-        'Content-Type': 'application/json',
         Accept: 'application/json',
         ...options.headers,
       },
@@ -66,7 +70,7 @@ export class HttpClientAdapter implements HttpAdapter {
     }
 
     if (options.body && method !== 'GET') {
-      fetchOptions.body = JSON.stringify(options.body);
+      fetchOptions.body = options.body;
     }
 
     // Config to handle timeouts
@@ -176,23 +180,23 @@ export class HttpClientAdapter implements HttpAdapter {
 
   // Public methods for HTTP requests
   async get<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-    return this._request<T>(endpoint, options, 'GET');
+    return this.request<T>(endpoint, options, 'GET');
   }
 
   async post<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-    return this._request<T>(endpoint, options, 'POST');
+    return this.request<T>(endpoint, options, 'POST');
   }
 
   async patch<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-    return this._request<T>(endpoint, options, 'PATCH');
+    return this.request<T>(endpoint, options, 'PATCH');
   }
 
   async put<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-    return this._request<T>(endpoint, options, 'PUT');
+    return this.request<T>(endpoint, options, 'PUT');
   }
 
   async delete<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-    return this._request<T>(endpoint, options, 'DELETE');
+    return this.request<T>(endpoint, options, 'DELETE');
   }
 }
 
