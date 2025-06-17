@@ -25,14 +25,6 @@ import { NavLink, useLocation } from 'react-router';
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-const navItems = [
-  { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
-  { title: 'Users', url: '/dashboard/users', icon: Bot },
-  { title: 'Services', url: '/dashboard/services', icon: Briefcase },
-  { title: 'Appointments', url: '/dashboard/appointments', icon: Calendar },
-  { title: 'Settings', url: '/dashboard/settings', icon: Settings2 },
-];
-
 const data = {
   teams: [
     {
@@ -148,6 +140,14 @@ const data = {
   // ],
 };
 
+const navItems = [
+  { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
+  { title: 'Users', url: '/dashboard/users', icon: Bot },
+  { title: 'Services', url: '/dashboard/services', icon: Briefcase },
+  { title: 'Appointments', url: '/dashboard/appointments', icon: Calendar },
+  { title: 'Settings', url: '/dashboard/settings', icon: Settings2 },
+];
+
 interface AppSideBarProps extends React.ComponentProps<typeof Sidebar> {
   toggleSidebar: () => void;
 }
@@ -163,7 +163,7 @@ export const AppSidebar = ({ toggleSidebar, ...props }: AppSideBarProps) => {
   }
 
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible='icon' {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
@@ -172,7 +172,7 @@ export const AppSidebar = ({ toggleSidebar, ...props }: AppSideBarProps) => {
           <SidebarGroupLabel>Admin</SidebarGroupLabel>
           {navItems.map((item) => (
             <SidebarMenu key={item.title}>
-              <SidebarMenuItem className="mb-1">
+              <SidebarMenuItem className='mb-1'>
                 <SidebarMenuButton
                   asChild
                   className={activeLink === item.url ? 'bg-sidebar-accent' : ''}

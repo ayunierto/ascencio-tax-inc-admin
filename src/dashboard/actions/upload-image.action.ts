@@ -1,16 +1,19 @@
 import { httpClient } from '@/adapters/http/httpClient.adapter';
-import { UploadImageFile } from '@/interfaces';
+import { Exception, UploadImageFile } from '@/interfaces';
 
 export const uploadImageAction = async (
   file: File
-): Promise<UploadImageFile> => {
+): Promise<UploadImageFile | Exception> => {
   try {
     const formdata = new FormData();
-    formdata.append('file', file, file.name);
+    formdata.append('image', file, file.name);
 
-    const response = await httpClient.post<UploadImageFile>('files/upload', {
-      body: formdata,
-    });
+    const response = await httpClient.post<UploadImageFile | Exception>(
+      'images',
+      {
+        body: formdata,
+      }
+    );
     return response;
   } catch (error) {
     console.error(error);
