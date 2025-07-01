@@ -1,11 +1,11 @@
-export interface ServiceRequest {
+export interface CreateServiceRequest {
   name: string;
+  duration: number;
+  price: number;
+  description?: string;
   address: string;
   isAvailableOnline: boolean;
-  duration: number;
-  description?: string;
   isActive: boolean;
-  image: File;
+  image?: string | File;
   staff: string[];
-  price: number;
 }

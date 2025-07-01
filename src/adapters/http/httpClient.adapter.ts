@@ -25,20 +25,9 @@ export class HttpClientAdapter implements HttpAdapter {
       );
 
     if (!apiUrl.endsWith('/')) {
-      // Make sure the URL ends with a slash '/'
       apiUrl += '/';
     }
     this.baseUrl = apiUrl;
-  }
-
-  private async refreshTokenIfNeeded(): Promise<string | null> {
-    // TODO: Implement logic to check if the token needs to be refreshed
-    // Check if the token is present and has not expired.
-    const token = storageAdapter.getItem('token');
-    if (token) {
-      return token;
-    }
-    return null;
   }
 
   private async request<T>(
@@ -46,7 +35,15 @@ export class HttpClientAdapter implements HttpAdapter {
     options: RequestOptions,
     method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
   ): Promise<T> {
-    const url = new URL(endpoint, this.baseUrl);
+    // Delete character '/' if exist
+    let formattedEndpoint: string;
+    if (endpoint.startsWith('/')) {
+      formattedEndpoint = endpoint.slice(1);
+    } else {
+      formattedEndpoint = endpoint;
+    }
+
+    const url = new URL(formattedEndpoint, this.baseUrl);
 
     if (options.params) {
       Object.entries(options.params).forEach(([key, value]) => {
@@ -62,11 +59,11 @@ export class HttpClientAdapter implements HttpAdapter {
       },
     };
 
-    const token = await this.refreshTokenIfNeeded();
-    if (token) {
+    const access_token = await storageAdapter.getAccessToken();
+    if (access_token) {
       (fetchOptions.headers as Record<string, string>)[
         'Authorization'
-      ] = `Bearer ${token}`;
+      ] = `Bearer ${access_token}`;
     }
 
     if (options.body && method !== 'GET') {
@@ -92,6 +89,7 @@ export class HttpClientAdapter implements HttpAdapter {
         // Try to parse the response as JSON
         const textResponse = await response.text();
         if (textResponse) {
+          // amazonq-ignore-next-line
           responseData = JSON.parse(textResponse);
         }
       } catch (error) {

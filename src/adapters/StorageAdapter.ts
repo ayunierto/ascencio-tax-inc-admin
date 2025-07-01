@@ -40,6 +40,19 @@ class StorageAdapter {
       return null;
     }
   }
+
+  public async setAccessToken(token: string) {
+    return this.setItem('access_token', token);
+  }
+  public async getAccessToken() {
+    return this.getItem('access_token');
+  }
+  public async removeAccessToken() {
+    return this.removeItem('access_token');
+  }
+  public async updateAccessToken(token: string) {
+    return this.setItem('access_token', token);
+  }
 }
 
 export const storageAdapter = new StorageAdapter();

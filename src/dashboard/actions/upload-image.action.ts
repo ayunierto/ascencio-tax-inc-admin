@@ -1,14 +1,15 @@
 import { httpClient } from '@/adapters/http/httpClient.adapter';
-import { Exception, UploadImageFile } from '@/interfaces';
+import { handleApiErrors } from '@/auth/utils';
+import { ExceptionResponse, UploadImageFile } from '@/interfaces';
 
-export const uploadImageAction = async (
+export const uploadImage = async (
   file: File
-): Promise<UploadImageFile | Exception> => {
+): Promise<UploadImageFile | ExceptionResponse> => {
   try {
     const formdata = new FormData();
     formdata.append('image', file, file.name);
 
-    const response = await httpClient.post<UploadImageFile | Exception>(
+    const response = await httpClient.post<UploadImageFile | ExceptionResponse>(
       'images',
       {
         body: formdata,
@@ -17,6 +18,6 @@ export const uploadImageAction = async (
     return response;
   } catch (error) {
     console.error(error);
-    throw new Error('The image could not be uploaded');
+    return handleApiErrors(error, 'uploadImage');
   }
 };

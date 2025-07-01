@@ -3,8 +3,11 @@ import {
   Bot,
   Briefcase,
   Calendar,
+  Coins,
+  CreditCard,
   LayoutDashboard,
   Settings2,
+  Wallet,
 } from 'lucide-react';
 
 import { NavUser, TeamSwitcher } from '@/dashboard/components';
@@ -32,6 +35,17 @@ const data = {
       logo: Briefcase,
       plan: 'Enterprise',
     },
+  ],
+
+  navItems: [
+    { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
+    { title: 'Users', url: '/dashboard/users', icon: Bot },
+    { title: 'Services', url: '/dashboard/services', icon: Briefcase },
+    { title: 'Appointments', url: '/dashboard/appointments', icon: Calendar },
+    { title: 'Account types', url: '/dashboard/account-types', icon: Wallet },
+    { title: 'Currencies', url: '/dashboard/currencies', icon: Coins },
+    { title: 'Accounts', url: '/dashboard/accounts', icon: CreditCard },
+    { title: 'Settings', url: '/dashboard/settings', icon: Settings2 },
   ],
 
   // navMain: [
@@ -140,14 +154,6 @@ const data = {
   // ],
 };
 
-const navItems = [
-  { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
-  { title: 'Users', url: '/dashboard/users', icon: Bot },
-  { title: 'Services', url: '/dashboard/services', icon: Briefcase },
-  { title: 'Appointments', url: '/dashboard/appointments', icon: Calendar },
-  { title: 'Settings', url: '/dashboard/settings', icon: Settings2 },
-];
-
 interface AppSideBarProps extends React.ComponentProps<typeof Sidebar> {
   toggleSidebar: () => void;
 }
@@ -163,16 +169,16 @@ export const AppSidebar = ({ toggleSidebar, ...props }: AppSideBarProps) => {
   }
 
   return (
-    <Sidebar collapsible='icon' {...props}>
+    <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Admin</SidebarGroupLabel>
-          {navItems.map((item) => (
+          {data.navItems.map((item) => (
             <SidebarMenu key={item.title}>
-              <SidebarMenuItem className='mb-1'>
+              <SidebarMenuItem className="mb-1">
                 <SidebarMenuButton
                   asChild
                   className={activeLink === item.url ? 'bg-sidebar-accent' : ''}
@@ -203,7 +209,7 @@ export const AppSidebar = ({ toggleSidebar, ...props }: AppSideBarProps) => {
         <NavUser
           user={{
             avatar: '/default-avatar.png',
-            name: user.name,
+            name: user.firstName,
             email: user.email,
           }}
         />

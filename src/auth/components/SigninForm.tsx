@@ -1,8 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { Link } from 'react-router';
-import { useMutation } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
 import {
   Form,
@@ -12,63 +10,30 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useAuthStore } from '../store/useAuthStore';
-import { SigninResponse } from '../interfaces';
-import { Exception } from '@/interfaces';
-import { CircleX, LogIn } from 'lucide-react';
-
-const signinFormSchema = z.object({
-  email: z.string().email({
-    message: 'Username must be a valid email.',
-  }),
-  password: z.string().min(6, {
-    message: 'Password must be at least 6 characters long.',
-  }),
-});
+import { SignInFormInputs, signInSchema } from '../schemas/signIn.schema';
+import { useSignInMutation } from '../hooks/useSignInMutation';
 
 export const SigninForm = ({
   className,
   ...props
 }: React.ComponentProps<'div'>) => {
-  const { signin } = useAuthStore();
-
-  const signinForm = useForm<z.infer<typeof signinFormSchema>>({
-    resolver: zodResolver(signinFormSchema),
+  const signInForm = useForm<SignInFormInputs>({
+    resolver: zodResolver(signInSchema),
     defaultValues: {
       email: '',
       password: '',
     },
   });
 
-  const onSignin = async (values: z.infer<typeof signinFormSchema>) => {
-    await signinMutation.mutateAsync(values);
+  const { mutateAsync: signIn, isPending } = useSignInMutation();
+
+  const onSignIn = async (values: SignInFormInputs) => {
+    await signIn(values);
   };
-
-  const signinMutation = useMutation({
-    mutationFn: signin,
-    onSuccess: async (data: SigninResponse | Exception) => {
-      if ('error' in data) {
-        toast('Error', {
-          description: data.message,
-          dismissible: false,
-          position: 'top-center',
-          icon: <CircleX size={18} />,
-        });
-        return;
-      }
-
-      toast('Login successful', {
-        icon: <LogIn size={18} />,
-        description: 'Welcome back!',
-        position: 'top-center',
-      });
-    },
-  });
 
   return (
     <div
@@ -78,14 +43,14 @@ export const SigninForm = ({
       )}
       {...props}
     >
-      <Card className='max-w-sm w-full'>
-        <CardHeader className='text-center'>
-          <CardTitle className='text-xl'>Please Sign In</CardTitle>
+      <Card className="max-w-sm w-full">
+        <CardHeader className="text-center">
+          <CardTitle className="text-xl">Please Sign In</CardTitle>
         </CardHeader>
         <CardContent>
-          <Form {...signinForm}>
-            <form onSubmit={signinForm.handleSubmit(onSignin)}>
-              <div className='grid gap-4'>
+          <Form {...signInForm}>
+            <form onSubmit={signInForm.handleSubmit(onSignIn)}>
+              <div className="grid gap-4">
                 {/* <div className="flex flex-col gap-4">
                   <Button variant="outline" className="w-full">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -113,18 +78,18 @@ export const SigninForm = ({
                 </div> */}
 
                 <FormField
-                  control={signinForm.control}
-                  name='email'
+                  control={signInForm.control}
+                  name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel htmlFor='email'>Email</FormLabel>
+                      <FormLabel htmlFor="email">Email</FormLabel>
                       <FormControl>
                         <Input
-                          id='email'
-                          type='email'
-                          placeholder='example@domain.com'
+                          id="email"
+                          type="email"
+                          placeholder="example@domain.com"
                           required
-                          autoComplete='username'
+                          autoComplete="username"
                           {...field}
                         />
                       </FormControl>
@@ -135,26 +100,26 @@ export const SigninForm = ({
                 />
 
                 <FormField
-                  control={signinForm.control}
-                  name='password'
+                  control={signInForm.control}
+                  name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <div className='flex items-center'>
-                        <FormLabel htmlFor='password'>Password</FormLabel>
+                      <div className="flex items-center">
+                        <FormLabel htmlFor="password">Password</FormLabel>
                         <Link
-                          to='/auth/forgot-password'
-                          className='ml-auto text-sm underline-offset-4 hover:underline'
+                          to="/auth/forgot-password"
+                          className="ml-auto text-sm underline-offset-4 hover:underline"
                         >
                           Forgot your password?
                         </Link>
                       </div>
                       <FormControl>
                         <Input
-                          id='password'
-                          type='password'
-                          placeholder='Enter your password'
+                          id="password"
+                          type="password"
+                          placeholder="Enter your password"
                           required
-                          autoComplete='current-password'
+                          autoComplete="current-password"
                           {...field}
                         />
                       </FormControl>
@@ -165,20 +130,20 @@ export const SigninForm = ({
                 />
 
                 <Button
-                  type='submit'
-                  className='w-full'
-                  disabled={signinMutation.isPending}
-                  variant='outline'
-                  loading={signinMutation.isPending}
+                  type="submit"
+                  className="w-full"
+                  disabled={isPending}
+                  variant="outline"
+                  loading={isPending}
                 >
                   Login
                 </Button>
 
-                {/* <div className='text-center text-sm'>
+                {/* <div className="text-center text-sm">
                   Don&apos;t have an account?{' '}
                   <Link
                     to={'/auth/signup'}
-                    className='underline underline-offset-4 font-bold text-primary hover:text-primary/80'
+                    className="underline underline-offset-4 font-bold text-primary hover:text-primary/80"
                   >
                     Sign up
                   </Link>

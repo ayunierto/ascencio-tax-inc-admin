@@ -1,13 +1,13 @@
-export interface User {
+export interface BasicUser {
   id: string;
-  name: string;
+  firstName: string;
   lastName: string;
   email: string;
   countryCode?: string;
   phoneNumber?: string;
-  birthdate?: string;
-  lastLogin?: string;
+  locale?: string;
   roles: string[];
-  createdAt: string;
-  updatedAt?: string;
+  lastLoginAt?: Date;
+  createdAt: Date;
+  updatedAt?: Date;
 }

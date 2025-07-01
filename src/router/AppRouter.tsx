@@ -25,10 +25,16 @@ const SettingsPage = lazy(async () => {
   return import('../dashboard/pages/settings/pages/SettingsPage');
 });
 const UsersPage = lazy(async () => {
-  return import('../dashboard/pages/users/pages//UsersPage');
+  return import('../dashboard/pages/users/pages/UsersPage');
 });
 const SignupPage = lazy(async () => {
   return import('../auth/pages/SignupPage');
+});
+const AccountTypesPage = lazy(async () => {
+  return import('../dashboard/pages/account-types/AccountTypesPage');
+});
+const CurrenciesPage = lazy(async () => {
+  return import('../dashboard/pages/currencies/CurrenciesPage');
 });
 
 export const AppRouter = () => {
@@ -37,13 +43,13 @@ export const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/auth' element={<AuthLayout />}>
+        <Route path="/auth" element={<AuthLayout />}>
           <Route index element={<SigninPage />} />
-          <Route path='/auth/signup' element={<SignupPage />} />
+          <Route path="/auth/signup" element={<SignupPage />} />
         </Route>
 
         <Route
-          path='/dashboard'
+          path="/dashboard"
           element={
             <Suspense fallback={<Loader fullScreen />}>
               <PrivateRoute isAuthenticated={status === 'authenticated'}>
@@ -53,17 +59,22 @@ export const AppRouter = () => {
           }
         >
           <Route index element={<DashboardPage />} />
-          <Route path='/dashboard/users' element={<UsersPage />} />
-          <Route path='/dashboard/services' element={<ServicesPage />} />
+          <Route path="/dashboard/users" element={<UsersPage />} />
+          <Route path="/dashboard/services" element={<ServicesPage />} />
           <Route
-            path='/dashboard/appointments'
+            path="/dashboard/appointments"
             element={<AppointmentsPage />}
           />
-          <Route path='/dashboard/settings' element={<SettingsPage />} />
+          <Route path="/dashboard/settings" element={<SettingsPage />} />
+          <Route
+            path="/dashboard/account-types"
+            element={<AccountTypesPage />}
+          />
+          <Route path="/dashboard/currencies" element={<CurrenciesPage />} />
         </Route>
 
-        <Route path='/' element={<Navigate to='/auth' />} />
-        <Route path='*' element={<Navigate to='/auth' />} />
+        <Route path="/" element={<Navigate to="/auth" />} />
+        <Route path="*" element={<Navigate to="/auth" />} />
       </Routes>
     </BrowserRouter>
   );

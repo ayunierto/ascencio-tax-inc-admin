@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { MoreHorizontal } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -14,8 +14,8 @@ import { getServicesAction } from '../actions';
 
 import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ServiceResponse } from '../interfaces/';
 import { DataTableColumnHeader } from '@/components/DataTable/DataTableColumHeader';
+import { GetServiceResponse } from '../interfaces/services-responses.interface';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,7 +27,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { deleteServiceAction } from '../actions/delete-service.action';
 
 export const useService = () => {
   const queryServices = useQuery({
@@ -37,11 +36,10 @@ export const useService = () => {
       return response;
     },
   });
-  const queryClient = useQueryClient();
 
   const onDelete = (id: string) => {};
 
-  const columns: ColumnDef<ServiceResponse>[] = [
+  const columns: ColumnDef<GetServiceResponse>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -51,14 +49,14 @@ export const useService = () => {
             (table.getIsSomePageRowsSelected() && 'indeterminate')
           }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label='Select all'
+          aria-label="Select all"
         />
       ),
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label='Select row'
+          aria-label="Select row"
         />
       ),
       enableSorting: false,
@@ -70,11 +68,11 @@ export const useService = () => {
       cell: ({ row }) => {
         return (
           <img
-            className='w-9 rounded'
+            className="w-9 rounded"
             src={
               (row.getValue('images') as { id: string; url: string }[])[0].url
             }
-            alt='image_service'
+            alt="image_service"
           />
         );
       },
@@ -82,13 +80,13 @@ export const useService = () => {
     {
       accessorKey: 'name',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Name' />
+        <DataTableColumnHeader column={column} title="Name" />
       ),
     },
     {
       accessorKey: 'duration',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Name' />
+        <DataTableColumnHeader column={column} title="Name" />
       ),
     },
     // {
@@ -99,7 +97,7 @@ export const useService = () => {
     {
       accessorKey: 'createdAt',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Created At' />
+        <DataTableColumnHeader column={column} title="Created At" />
       ),
       cell: ({ row }) =>
         new Date(row.getValue('createdAt')).toLocaleDateString(),
@@ -107,7 +105,7 @@ export const useService = () => {
     {
       accessorKey: 'updatedAt',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Updated At' />
+        <DataTableColumnHeader column={column} title="Updated At" />
       ),
       cell: ({ row }) =>
         new Date(row.getValue('updatedAt')).toLocaleDateString(),
@@ -118,13 +116,13 @@ export const useService = () => {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant='ghost' className='h-8 w-8 p-0'>
-                <span className='sr-only'>Open menu</span>
-                <MoreHorizontal className='h-4 w-4' />
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent align='end'>
+            <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
                 onClick={() => navigator.clipboard.writeText(row.original.id)}
@@ -135,7 +133,7 @@ export const useService = () => {
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <DropdownMenuItem
-                    variant='destructive'
+                    variant="destructive"
                     onClick={onDelete(row.original.id)}
                   >
                     Delete

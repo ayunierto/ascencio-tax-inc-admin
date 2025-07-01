@@ -167,7 +167,7 @@ export const ServiceForm = ({
 
   if (staffQuery.isError || 'error' in staffQuery.data || !staffQuery.data) {
     return (
-      <Alert variant='destructive'>
+      <Alert variant="destructive">
         <AlertCircleIcon />
         <AlertTitle>Error</AlertTitle>
         <AlertDescription>
@@ -179,18 +179,18 @@ export const ServiceForm = ({
 
   return (
     <Form {...serviceForm}>
-      <form onSubmit={serviceForm.handleSubmit(onSubmit)} className='space-y-4'>
+      <form onSubmit={serviceForm.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={serviceForm.control}
-          name='image'
+          name="image"
           render={({ field: { onChange, onBlur, name, ref } }) => (
             <FormItem>
-              <FormLabel htmlFor='image'>Image</FormLabel>
+              <FormLabel htmlFor="image">Image</FormLabel>
               <FormControl>
                 <Input
-                  accept='.jpg,.jpeg,.png'
-                  id='image'
-                  type='file'
+                  accept=".jpg,.jpeg,.png"
+                  id="image"
+                  type="file"
                   onChange={(e) => {
                     onChange(e.target.files);
                   }}
@@ -206,12 +206,17 @@ export const ServiceForm = ({
 
         <FormField
           control={serviceForm.control}
-          name='name'
-          render={({ field }) => (
+          name="name"
+          render={({ field: { onChange, value, ...rest } }) => (
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder='Name' {...field} />
+                <Input
+                  placeholder="Name"
+                  {...rest}
+                  onChange={onChange}
+                  value={value}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -220,27 +225,27 @@ export const ServiceForm = ({
 
         <FormField
           control={serviceForm.control}
-          name='staff'
+          name="staff"
           render={() => (
             <FormItem>
-              <div className=''>
-                <FormLabel className='text-base'>Staff</FormLabel>
+              <div className="">
+                <FormLabel className="text-base">Staff</FormLabel>
                 <FormDescription>
                   Select the staff member for this service.
                 </FormDescription>
               </div>
-              <div className='grid grid-cols-2 md:grid-cols-3 gap-2'>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {staffMembers.length > 0 ? (
                   staffMembers.map((item) => (
                     <FormField
                       key={item.id}
                       control={serviceForm.control}
-                      name='staff'
+                      name="staff"
                       render={({ field }) => {
                         return (
                           <FormItem
                             key={item.id}
-                            className='flex flex-row items-center gap-2'
+                            className="flex flex-row items-center gap-2"
                           >
                             <FormControl>
                               <Checkbox
@@ -256,7 +261,7 @@ export const ServiceForm = ({
                                 }}
                               />
                             </FormControl>
-                            <FormLabel className='text-sm font-normal'>
+                            <FormLabel className="text-sm font-normal">
                               {item.label}
                             </FormLabel>
                           </FormItem>
@@ -266,7 +271,7 @@ export const ServiceForm = ({
                   ))
                 ) : (
                   <Link
-                    className='text-blue-500 hover:underline'
+                    className="text-blue-500 hover:underline"
                     to={'/dashboard/staff'}
                   >
                     Add new staff member.
@@ -280,7 +285,7 @@ export const ServiceForm = ({
 
         <FormField
           control={serviceForm.control}
-          name='duration'
+          name="duration"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Duration</FormLabel>
@@ -288,17 +293,17 @@ export const ServiceForm = ({
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue
-                      placeholder='Select a duration'
-                      className='flex-1/2 w-full'
+                      placeholder="Select a duration"
+                      className="flex-1/2 w-full"
                     />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value='30'>30 min</SelectItem>
-                  <SelectItem value='45'>45 min</SelectItem>
-                  <SelectItem value='60'>60 min</SelectItem>
-                  <SelectItem value='90'>90 min</SelectItem>
-                  <SelectItem value='120'>120 min</SelectItem>
+                  <SelectItem value="30">30 min</SelectItem>
+                  <SelectItem value="45">45 min</SelectItem>
+                  <SelectItem value="60">60 min</SelectItem>
+                  <SelectItem value="90">90 min</SelectItem>
+                  <SelectItem value="120">120 min</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -309,12 +314,12 @@ export const ServiceForm = ({
 
         <FormField
           control={serviceForm.control}
-          name='isAvailableOnline'
+          name="isAvailableOnline"
           render={({ field }) => (
             <FormItem
               className={`flex flex-row items-center justify-between rounded-lg border px-3 h-9 shadow-sm`}
             >
-              <div className='space-y-0.5'>
+              <div className="space-y-0.5">
                 <FormLabel>
                   {field.value ? <Video /> : <VideoOff />} Available Online
                 </FormLabel>
@@ -333,12 +338,12 @@ export const ServiceForm = ({
 
         <FormField
           control={serviceForm.control}
-          name='isActive'
+          name="isActive"
           render={({ field }) => (
             <FormItem
               className={`flex flex-row items-center justify-between rounded-lg border px-3 h-9 shadow-sm`}
             >
-              <div className='space-y-0.5'>
+              <div className="space-y-0.5">
                 <FormLabel>
                   {field.value ? <Eye /> : <EyeOff />} Active
                 </FormLabel>
@@ -357,12 +362,12 @@ export const ServiceForm = ({
 
         <FormField
           control={serviceForm.control}
-          name='address'
+          name="address"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Address</FormLabel>
               <FormControl>
-                <Input placeholder='Address' {...field} />
+                <Input placeholder="Address" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -371,14 +376,14 @@ export const ServiceForm = ({
 
         <FormField
           control={serviceForm.control}
-          name='description'
+          name="description"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder='Some description here.'
-                  className='resize-none'
+                  placeholder="Some description here."
+                  className="resize-none"
                   {...field}
                 />
               </FormControl>
@@ -391,8 +396,8 @@ export const ServiceForm = ({
         <Button
           loading={serviceMutation.isPending}
           disabled={serviceMutation.isPending}
-          type='submit'
-          className='w-full cursor-pointer'
+          type="submit"
+          className="w-full cursor-pointer"
         >
           Save
         </Button>

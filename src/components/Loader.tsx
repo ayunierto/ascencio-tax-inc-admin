@@ -1,4 +1,5 @@
-import { Loader as Loading } from 'lucide-react';
+import { Loader as LoadingIcon } from 'lucide-react';
+import { JSX } from 'react';
 
 interface LoaderProps extends React.ComponentProps<'div'> {
   className?: string;
@@ -6,23 +7,22 @@ interface LoaderProps extends React.ComponentProps<'div'> {
   text?: string;
   fullScreen?: boolean;
 }
+
 export const Loader = ({
-  className,
-  showText,
-  text,
-  fullScreen,
-}: LoaderProps) => {
+  className = '',
+  showText = false,
+  text = 'Loading...',
+  fullScreen = false,
+}: LoaderProps): JSX.Element => {
   return (
     <div
-      className={`flex ${
-        fullScreen ? 'h-screen w-screen' : ' w-full'
-      } items-center justify-center flex-grow ${className}`}
+      className={`flex items-center justify-center flex-grow
+        ${fullScreen ? 'h-screen w-screen' : 'w-full'}
+        ${className}`}
     >
-      <Loading className="h-8 w-8 animate-spin text-blue-600" />
+      <LoadingIcon className="h-8 w-8 animate-spin text-blue-600" />
       {showText && (
-        <span className="ml-2 text-gray-600 dark:text-gray-400">
-          {text || 'Loading...'}
-        </span>
+        <span className="ml-2 text-gray-600 dark:text-gray-400">{text}</span>
       )}
     </div>
   );

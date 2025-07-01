@@ -1,157 +1,155 @@
 import { create } from 'zustand';
 
 import {
-  User,
   SignUpRequest,
   SignUpResponse,
-  VerifyCodeResponse,
-  VerifyCodeRequest,
-  SigninRequest,
-  SigninResponse,
+  VerifyEmailCodeResponse,
+  VerifyEmailCodeRequest,
+  SignInResponse,
   ForgotPasswordResponse,
   ForgotPasswordRequest,
   ResetPasswordRequest,
   ResetPasswordResponse,
   DeleteAccountResponse,
+  BasicUser,
+  SignInRequest,
+  CheckStatusResponse,
+  UpdateProfileResponse,
+  UpdateProfileRequest,
+  DeleteAccountRequest,
 } from '../interfaces';
-import { Exception } from '@/interfaces/exception.interface';
 import {
-  checkStatusAction,
-  deleteAccountAction,
-  forgotPasswordAction,
-  resetPasswordAction,
-  signinAction,
-  signupAction,
-  verifyCodeAction,
+  checkStatus,
+  deleteAccount,
+  forgotPassword,
+  resetPassword,
+  singIn,
+  signUp,
+  verifyEmailCode,
+  updateProfile,
 } from '../actions';
-import { DeleteAccountRequest } from '../interfaces';
 import { storageAdapter } from '@/adapters/StorageAdapter';
 
 export type AuthStatus = 'authenticated' | 'unauthenticated' | 'checking';
 
 export interface AuthState {
   status: AuthStatus;
-  token?: string;
-  user?: User;
+  access_token?: string;
+  user?: BasicUser;
 
-  signup: (values: SignUpRequest) => Promise<SignUpResponse | Exception>;
-  verifyCode: (
-    data: VerifyCodeRequest
-  ) => Promise<VerifyCodeResponse | Exception>;
-  signin: (credentials: SigninRequest) => Promise<SigninResponse | Exception>;
-  checkStatus: () => Promise<SigninResponse | Exception>;
-  deleteAccount: (
-    data: DeleteAccountRequest
-  ) => Promise<DeleteAccountResponse | Exception>;
+  signUp: (values: SignUpRequest) => Promise<SignUpResponse>;
+  verifyEmailCode: (
+    data: VerifyEmailCodeRequest
+  ) => Promise<VerifyEmailCodeResponse>;
+  signIn: (credentials: SignInRequest) => Promise<SignInResponse>;
+  checkStatus: () => Promise<CheckStatusResponse>;
+  deleteAccount: (data: DeleteAccountRequest) => Promise<DeleteAccountResponse>;
   logout: () => Promise<void>;
-  setAuthenticated: (token: string, user: User) => void;
+  setAuthenticated: (access_token: string, user: BasicUser) => void;
   setUnauthenticated: () => void;
-  setUser: (user: User) => void;
   forgotPassword: (
     data: ForgotPasswordRequest
-  ) => Promise<ForgotPasswordResponse | Exception>;
-  resetPassword: (
-    data: ResetPasswordRequest
-  ) => Promise<ResetPasswordResponse | Exception>;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function isApiErrorResponse(obj: any): obj is Exception {
-  return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    typeof obj.message === 'string' &&
-    typeof obj.statusCode === 'number'
-  );
+  ) => Promise<ForgotPasswordResponse>;
+  resetPassword: (data: ResetPasswordRequest) => Promise<ResetPasswordResponse>;
+  updateProfile: (data: UpdateProfileRequest) => Promise<UpdateProfileResponse>;
 }
 
 export const useAuthStore = create<AuthState>()((set, get) => ({
   status: 'checking',
-  token: undefined,
+  access_token: undefined,
   user: undefined,
 
-  checkStatus: async () => {
-    const response = await checkStatusAction();
+  signUp: async (data: SignUpRequest) => {
+    const response = await signUp(data);
+    if ('user' in response) {
+      set({ user: response.user });
+    }
+    return response;
+  },
 
-    if (isApiErrorResponse(response)) {
-      get().setUnauthenticated();
+  verifyEmailCode: async (data: VerifyEmailCodeRequest) => {
+    const response = await verifyEmailCode(data);
+    return response;
+  },
+
+  signIn: async (credentials: SignInRequest) => {
+    const response = await singIn(credentials);
+
+    if ('access_token' in response) {
+      await storageAdapter.setAccessToken(response.access_token);
+      get().setAuthenticated(response.access_token, response.user);
       return response;
     }
 
-    storageAdapter.setItem('token', response.token);
-    get().setAuthenticated(response.token, response.user);
     return response;
   },
 
-  signup: async (data: SignUpRequest) => {
-    const response = await signupAction(data);
-    if ('user' in response && !isApiErrorResponse(response)) {
-      set({ user: (response as SignUpResponse).user });
+  updateProfile: async (data: UpdateProfileRequest) => {
+    const response = await updateProfile(data);
+    if ('user' in response) {
+      set({ user: response.user });
     }
-    return response;
-  },
-
-  verifyCode: async (data: VerifyCodeRequest) => {
-    const response = await verifyCodeAction(data);
-    return response;
-  },
-
-  signin: async (credentials: SigninRequest) => {
-    const response = await signinAction(credentials);
-
-    if (isApiErrorResponse(response)) {
-      get().setUnauthenticated();
-      return response;
-    }
-
-    storageAdapter.setItem('token', response.token);
-    get().setAuthenticated(response.token, response.user);
     return response;
   },
 
   deleteAccount: async (data: DeleteAccountRequest) => {
-    const response = await deleteAccountAction(data);
+    const response = await deleteAccount(data);
 
-    if (isApiErrorResponse(response)) {
+    if ('error' in response) {
       return response;
     }
 
-    storageAdapter.removeItem('token');
+    await storageAdapter.removeAccessToken();
     get().setUnauthenticated();
+    return response;
+  },
+
+  checkStatus: async () => {
+    const response = await checkStatus();
+
+    if ('access_token' in response) {
+      await storageAdapter.setAccessToken(response.access_token);
+      get().setAuthenticated(response.access_token, response.user);
+      return response;
+    }
+
+    console.log(response);
+    get().setUnauthenticated();
+    if (response.error === 'Network Error') {
+      set({ status: 'checking' });
+    }
     return response;
   },
 
   logout: async () => {
-    storageAdapter.removeItem('token');
+    await storageAdapter.removeAccessToken();
     get().setUnauthenticated();
   },
 
   forgotPassword: async (data: ForgotPasswordRequest) => {
-    const response = await forgotPasswordAction(data);
-    if (!isApiErrorResponse(response)) {
-      set({
-        user: {
-          email: data.email,
-          createdAt: '',
-          id: '',
-          lastName: '',
-          name: '',
-          roles: [],
-        },
-      });
-    }
+    const response = await forgotPassword(data);
+    set({
+      user: {
+        email: data.email,
+        createdAt: new Date(),
+        id: '',
+        lastName: '',
+        firstName: '',
+        roles: [],
+      },
+    });
     return response;
   },
 
   resetPassword: async (data: ResetPasswordRequest) => {
-    const response = await resetPasswordAction(data);
+    const response = await resetPassword(data);
     return response;
   },
 
-  setAuthenticated: (token: string, user: User) => {
+  setAuthenticated: (access_token: string, user: BasicUser) => {
     set({
       status: 'authenticated',
-      token: token,
+      access_token: access_token,
       user: user,
     });
   },
@@ -159,12 +157,8 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   setUnauthenticated: () => {
     set({
       status: 'unauthenticated',
-      token: undefined,
+      access_token: undefined,
       user: undefined,
     });
-  },
-
-  setUser: (user: User) => {
-    set({ user: user });
   },
 }));

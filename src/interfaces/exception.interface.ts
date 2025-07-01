@@ -1,5 +1,6 @@
-export interface Exception {
+export interface ExceptionResponse {
   message: string;
   error: string;
-  statusCode: number;
+  statusCode?: number;
+  cause?: string;
 }
