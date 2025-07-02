@@ -1,14 +1,16 @@
+// src/hooks/useMutations.ts
+
+import { HttpError } from '@/adapters/http/http-client.interface';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { ExceptionResponse } from '@/interfaces';
 
 // Props para el hook de mutaciones
 interface UseMutationsProps<T, TCreate, TUpdate> {
   queryKey: string[];
   service: {
-    create: (data: TCreate) => Promise<T | ExceptionResponse>;
-    update: (id: string, data: TUpdate) => Promise<T | ExceptionResponse>;
-    remove: (id: string) => Promise<T | ExceptionResponse>;
+    create: (data: TCreate) => Promise<T | HttpError>;
+    update: (id: string, data: TUpdate) => Promise<T | HttpError>;
+    remove: (id: string) => Promise<T | HttpError>;
   };
   entityName: string;
   onClose: () => void;
@@ -17,7 +19,11 @@ interface UseMutationsProps<T, TCreate, TUpdate> {
 // Tipos para las variables de las mutaciones
 type UpdateVariables<TUpdate> = { id: string; data: TUpdate };
 
-export const useMutations = <T extends { id: string; name?: string }, TCreate, TUpdate>({
+export const useMutations = <
+  T extends { id: string; name?: string },
+  TCreate,
+  TUpdate
+>({
   queryKey,
   service,
   entityName,
@@ -25,7 +31,10 @@ export const useMutations = <T extends { id: string; name?: string }, TCreate, T
 }: UseMutationsProps<T, TCreate, TUpdate>) => {
   const queryClient = useQueryClient();
 
-  const handleSuccess = (action: 'created' | 'updated' | 'deleted', data: T | ExceptionResponse) => {
+  const handleSuccess = (
+    action: 'created' | 'updated' | 'deleted',
+    data: T | HttpError
+  ) => {
     if ('error' in data) {
       toast.error(data.message);
       return;
@@ -40,19 +49,23 @@ export const useMutations = <T extends { id: string; name?: string }, TCreate, T
     onClose();
   };
 
-  const createMutation = useMutation<T | ExceptionResponse, Error, TCreate>({
+  const createMutation = useMutation<T | HttpError, Error, TCreate>({
     mutationFn: service.create,
     onSuccess: (data) => handleSuccess('created', data),
     onError: (error) => handleError(error, 'creation'),
   });
 
-  const updateMutation = useMutation<T | ExceptionResponse, Error, UpdateVariables<TUpdate>>({
+  const updateMutation = useMutation<
+    T | HttpError,
+    Error,
+    UpdateVariables<TUpdate>
+  >({
     mutationFn: ({ id, data }) => service.update(id, data),
     onSuccess: (data) => handleSuccess('updated', data),
     onError: (error) => handleError(error, 'update'),
   });
 
-  const deleteMutation = useMutation<T | ExceptionResponse, Error, string>({
+  const deleteMutation = useMutation<T | HttpError, Error, string>({
     mutationFn: service.remove,
     onSuccess: (data) => handleSuccess('deleted', data),
     onError: (error) => handleError(error, 'deletion'),

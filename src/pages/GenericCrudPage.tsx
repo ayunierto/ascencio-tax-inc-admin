@@ -59,7 +59,7 @@ export const GenericCrudPage = <T extends { id: string }, TCreate, TUpdate>({
   });
 
   // Manejador del submit del formulario
-  const handleSubmit = (formData: z.infer<typeof createSchema>) => {
+  const handleSubmit = (formData: TCreate | TUpdate) => {
     if (itemToEdit) {
       updateMutation.mutate({ id: itemToEdit.id, data: formData as TUpdate });
     } else {
@@ -93,7 +93,7 @@ export const GenericCrudPage = <T extends { id: string }, TCreate, TUpdate>({
           schema={createSchema}
           fields={formFields}
           onSubmit={handleSubmit}
-          defaultValues={itemToEdit as z.infer<typeof createSchema> | undefined}
+          defaultValues={itemToEdit}
           isEditMode={!!itemToEdit}
           isLoading={createMutation.isPending || updateMutation.isPending}
         />

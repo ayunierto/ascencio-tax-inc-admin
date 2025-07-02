@@ -1,6 +1,6 @@
 export interface RequestOptions {
   headers?: HeadersInit;
-  body?: BodyInit;
+  body?: BodyInit | object;
   params?: Record<string, string | number>;
   signal?: AbortSignal;
 }
@@ -16,17 +16,13 @@ export class NetworkError extends Error {
 
 export class HttpError extends Error {
   statusCode: number;
-  errorData?: Record<string, unknown>;
+  error?: string;
 
-  constructor(
-    message: string,
-    statusCode: number,
-    errorData?: Record<string, unknown>
-  ) {
+  constructor(message: string, statusCode: number, error?: string) {
     super(message);
     this.name = 'HttpError';
     this.statusCode = statusCode;
-    this.errorData = errorData;
+    this.error = error;
   }
 }
 

@@ -1,8 +1,8 @@
-import { ExceptionResponse } from '@/interfaces';
+import { HttpError } from '@/adapters/http/http-client.interface';
 import { Currency } from './currency.interface';
 
-export type CreateCurrencyResponse = Currency | ExceptionResponse;
-export type GetCurrencyResponse = Currency | ExceptionResponse;
-export type GetCurrenciesResponse = Currency[] | ExceptionResponse;
-export type UpdateCurrencyResponse = Currency | ExceptionResponse;
-export type DeleteCurrencyResponse = Currency | ExceptionResponse;
+export type CreateCurrencyResponse = Currency | HttpError;
+export type GetCurrencyResponse = Currency | HttpError;
+export type GetCurrenciesResponse = Currency[] | HttpError;
+export type UpdateCurrencyResponse = Currency | HttpError;
+export type DeleteCurrencyResponse = Currency | HttpError;

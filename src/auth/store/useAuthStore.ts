@@ -113,7 +113,6 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       return response;
     }
 
-    console.log(response);
     get().setUnauthenticated();
     if (response.error === 'Network Error') {
       set({ status: 'checking' });

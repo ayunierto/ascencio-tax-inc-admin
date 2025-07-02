@@ -47,9 +47,10 @@ export const GenericCreateAndUpdate = ({
     }
     setOpen(openState);
   };
-  
+
   // Capitaliza el nombre de la entidad para mostrarlo en la UI
-  const capitalizedEntity = entityName.charAt(0).toUpperCase() + entityName.slice(1);
+  const capitalizedEntity =
+    entityName.charAt(0).toUpperCase() + entityName.slice(1);
   const title = isEditMode ? `Edit ${entityName}` : `Add ${entityName}`;
   const description = isEditMode
     ? `Update a ${entityName} here. Click save when you're done.`

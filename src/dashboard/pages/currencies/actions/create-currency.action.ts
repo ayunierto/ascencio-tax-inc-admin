@@ -1,13 +1,11 @@
 import { httpClient } from '@/adapters/http/httpClient.adapter';
 import { CreateCurrencyInputs } from '../schemas';
-import { CreateCurrencyResponse } from '../interfaces';
 import { handleApiErrors } from '@/auth/utils';
+import { Currency } from '../interfaces';
 
-export const createCurrency = async (
-  values: CreateCurrencyInputs
-): Promise<CreateCurrencyResponse> => {
+export const createCurrency = async (values: CreateCurrencyInputs) => {
   try {
-    const res = await httpClient.post<CreateCurrencyResponse>('currency', {
+    const res = await httpClient.post<Currency>('currency', {
       headers: {
         'Content-Type': 'application/json',
       },

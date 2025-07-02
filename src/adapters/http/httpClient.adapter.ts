@@ -1,3 +1,4 @@
+import { CheckStatusResponse } from '@/auth/interfaces';
 import { storageAdapter } from '../StorageAdapter';
 import {
   HttpAdapter,
@@ -6,7 +7,7 @@ import {
   HttpError,
 } from './http-client.interface';
 
-const DEFAULT_TIMEOUT = 10000;
+const DEFAULT_TIMEOUT: number = 10000;
 
 export class HttpClientAdapter implements HttpAdapter {
   private readonly baseUrl: string;
@@ -18,16 +19,48 @@ export class HttpClientAdapter implements HttpAdapter {
         'HttpClientAdapter: VITE_API_URL environment variable is not set.'
       );
     }
-
-    if (!apiUrl.startsWith('http'))
+    if (!apiUrl.startsWith('http')) {
       throw new Error(
         'HttpClientAdapter: VITE_API_URL environment must start with the http or https protocol.'
       );
-
+    }
     if (!apiUrl.endsWith('/')) {
       apiUrl += '/';
     }
     this.baseUrl = apiUrl;
+  }
+
+  // Refresca el token en cada peticion para mantaner al usuario logeado.
+  private async refreshToken(): Promise<string | null> {
+    const token = await storageAdapter.getAccessToken();
+    if (!token) {
+      console.warn('No token found in storage');
+      return null;
+    }
+    try {
+      const res = await fetch(this.baseUrl + 'auth/check-status', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!res.ok) {
+        console.warn('Reflesh token failed');
+        return null;
+      }
+      const data: CheckStatusResponse = await res.json();
+      if ('statusCode' in data) {
+        console.warn(data.message);
+        return null;
+      }
+      await storageAdapter.setAccessToken(data.access_token);
+      return data.access_token;
+    } catch (error) {
+      console.warn(error);
+      return null;
+    }
   }
 
   private async request<T>(
@@ -35,18 +68,15 @@ export class HttpClientAdapter implements HttpAdapter {
     options: RequestOptions,
     method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
   ): Promise<T> {
-    // Delete character '/' if exist
-    let formattedEndpoint: string;
-    if (endpoint.startsWith('/')) {
-      formattedEndpoint = endpoint.slice(1);
-    } else {
-      formattedEndpoint = endpoint;
-    }
+    // Función para ejecutar la lógica de la petición, para poder reintentarla.
+    const processedOptions: RequestOptions = options;
 
-    const url = new URL(formattedEndpoint, this.baseUrl);
-
-    if (options.params) {
-      Object.entries(options.params).forEach(([key, value]) => {
+    const url: URL = new URL(
+      endpoint.startsWith('/') ? endpoint.slice(1) : endpoint,
+      this.baseUrl
+    );
+    if (processedOptions.params) {
+      Object.entries(processedOptions.params).forEach(([key, value]) => {
         url.searchParams.append(key, String(value));
       });
     }
@@ -55,128 +85,101 @@ export class HttpClientAdapter implements HttpAdapter {
       method: method,
       headers: {
         Accept: 'application/json',
-        ...options.headers,
+        ...processedOptions.headers,
       },
     };
 
-    const access_token = await storageAdapter.getAccessToken();
-    if (access_token) {
+    // Añadir token de autorización si existe
+    const token = await this.refreshToken();
+    if (token) {
       (fetchOptions.headers as Record<string, string>)[
         'Authorization'
-      ] = `Bearer ${access_token}`;
+      ] = `Bearer ${token}`;
     }
 
-    if (options.body && method !== 'GET') {
-      fetchOptions.body = options.body;
+    // Handle body types : FormData | object | string
+    if (processedOptions.body && method !== 'GET') {
+      if (processedOptions.body instanceof FormData) {
+        // Si es FormData, lo pasamos directamente.
+        // IMPORTANTE: NO establecemos el 'Content-Type'. El navegador lo hará
+        // automáticamente con el 'boundary' correcto.
+        fetchOptions.body = processedOptions.body;
+      } else if (typeof processedOptions.body === 'object') {
+        // Si es un objeto normal, lo convertimos a JSON.
+        (fetchOptions.headers as Record<string, string>)['Content-Type'] =
+          'application/json';
+        fetchOptions.body = JSON.stringify(processedOptions.body);
+      } else {
+        // Para otros tipos de body (ej. string) que ya han sido pasados por el método stringify.
+        fetchOptions.body = processedOptions.body as BodyInit;
+      }
     }
 
-    // Config to handle timeouts
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT);
-    fetchOptions.signal = controller.signal; // Use the controller's signal for aborting
-    if (options.signal) {
-      options.signal.addEventListener('abort', () => controller.abort());
+    const controller: AbortController = new AbortController();
+    const timeoutId: NodeJS.Timeout = setTimeout(
+      () => controller.abort(),
+      DEFAULT_TIMEOUT
+    );
+    fetchOptions.signal = controller.signal;
+    if (processedOptions.signal) {
+      processedOptions.signal.addEventListener('abort', () =>
+        controller.abort()
+      );
     }
 
     try {
-      const response = await fetch(url.toString(), fetchOptions);
-      clearTimeout(timeoutId); // Clear the timeout if the request completes
+      const response: Response = await fetch(url.toString(), fetchOptions);
+      clearTimeout(timeoutId);
 
-      // Try to parse the response body as JSON
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let responseData: any = null;
-      try {
-        // Try to parse the response as JSON
-        const textResponse = await response.text();
-        if (textResponse) {
-          // amazonq-ignore-next-line
+      const textResponse: string = await response.text();
+      if (textResponse) {
+        try {
           responseData = JSON.parse(textResponse);
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (e) {
+          console.warn(
+            'HttpClientAdapter: Failed to parse JSON response body.'
+          );
         }
-      } catch (error) {
-        // If parsing fails, we assume the response is not JSON or is empty.
-        // This can happen for non-JSON responses like HTML error pages, plain text, etc.
-        // This means the response did not have a JSON body or it was malformed.
-        // We log the error but do not throw, as it could be an expected non-JSON error.
-        console.warn(
-          'HttpClientAdapter: Failed to parse JSON response body for a non-ok response. Could be an expected non-JSON error, or no body.',
-          error
-        );
       }
 
-      // If the response is unsuccessful (status code outside of 200-299),
-      // but we were able to obtain data (or there was no data but the app expects specific handling of that status code),
-      // we return the data along with the HTTP status for the consumer to handle.
-      // We modify the return type if necessary to include the status and OK.
-      // Or, as in this case, if we don't want to throw an error, we simply return `responseData`
-      // and it will be the caller's responsibility to verify the status code of the original response.
-
-      // For 401, 404, 500, etc., if the backend sends a JSON, we will return it.
-      // If the response is not OK and a JSON could NOT be parsed (e.g., empty body or unexpected plain text),
-      // then we will throw an error.
-      if (!response.ok && !responseData) {
-        // If the response was unsuccessful AND we couldn't parse a JSON body,
-        // we assume it's an unexpected API error (perhaps not JSON, or no body).
-        // In this case, we throw an HttpError.
-        throw new HttpError(
-          `HTTP error ${response.status}. No response data or invalid JSON.`,
-          response.status
-        );
+      // Si la respuesta no es exitosa (status code fuera de 200-299)
+      if (!response.ok) {
+        // responseData podría contener el objeto Exception de tu backend
+        const errorMessage =
+          responseData?.message || `HTTP error ${response.status}`;
+        throw new HttpError(errorMessage, response.status, responseData);
       }
 
-      // In all other cases (OK response, or not OK response but with parsable JSON body),
-      // we return the responseData directly.
-      // This includes 401 responses with JSON.
-      // The consumer must check `response.status` (if we pass it)
-      // or infer the success/failure from the `responseData` structure.
-
-      // To be able to know the status code in the consumer, we can add a property.
-      // This means that type T must be able to handle this additional property.
-      // One way to do this without changing T is to wrap the response.
-      // However, to keep it simple and comply with your request not to throw,
-      // we simply return responseData.
-      // The caller MUST be prepared for a `responseData` representing an error.
-
-      // If response.ok is true, simply return responseData.
-
-      // If response.ok is false (e.g. 401), but responseData contains the API error,
-      // also returns responseData.
+      // Si la respuesta es exitosa
       return responseData as T;
     } catch (error) {
-      clearTimeout(timeoutId); // Clear the timeout if an error occurs
+      clearTimeout(timeoutId);
 
-      // If the error is an instance of HttpError, rethrow it
-      // This allows you to handle HTTP errors specifically in your application
+      // Si ya es un HttpError (lanzado por !response.ok),
       if (error instanceof HttpError) {
         throw error;
       }
 
-      // If the error is an AbortError, it means the request was aborted (e.g., due to timeout)
+      // Si es un error de AbortController (timeout)
       if (error instanceof Error && error.name === 'AbortError') {
-        console.error('HttpClientAdapter: Request timed out.');
+        console.error('FetchAdapter: Request timed out.');
         throw new NetworkError('The request timed out. Please try again.');
       }
 
-      // Other network errors or unexpected errors
+      // Otros errores (fallo de red, DNS, CORS, etc.) se suelen manifestar como TypeError
       if (error instanceof Error) {
-        console.error(
-          `HttpClientAdapter: Network or unexpected error during ${method}:`,
-          error
-        );
-        // Throw a NetworkError with the error message
         throw new NetworkError(`Unable to complete request. ${error.message}`);
       }
 
-      // If the error is not an instance of Error, log it and throw a generic error
-      // This is a fallback for unexpected error types
-      console.error(
-        `HttpClientAdapter: Unknown error during ${method}:`,
-        error
-      );
-      throw new Error('An unknown error occurred during the request.');
+      // Error completamente inesperado
+      throw new Error('An unexpected error occurred during the request.');
     }
   }
 
-  // Public methods for HTTP requests
+  // Los métodos públicos no cambian
   async get<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
     return this.request<T>(endpoint, options, 'GET');
   }
@@ -190,11 +193,11 @@ export class HttpClientAdapter implements HttpAdapter {
   }
 
   async put<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-    return this.request<T>(endpoint, options, 'PUT');
+    return this.request<T>(endpoint, options, 'PATCH');
   }
 
   async delete<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-    return this.request<T>(endpoint, options, 'DELETE');
+    return this.request<T>(endpoint, options, 'PATCH');
   }
 }
 

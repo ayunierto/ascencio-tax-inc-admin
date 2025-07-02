@@ -58,12 +58,18 @@ function Button({
 
   return (
     <Comp
-      data-slot='button'
+      data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
       disabled={loading || disabled}
       {...props}
     >
-      {loading ? <Loader className='animate-spin size-4' /> : props.children}
+      {loading ? (
+        <>
+          <Loader className="animate-spin size-4" /> Please wait...
+        </>
+      ) : (
+        props.children
+      )}
     </Comp>
   );
 }

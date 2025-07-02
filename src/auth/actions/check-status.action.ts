@@ -4,10 +4,9 @@ import { handleApiErrors } from '../utils';
 
 export const checkStatus = async (): Promise<CheckStatusResponse> => {
   try {
-    const res = await httpClient.get<CheckStatusResponse>('auth/check-status');
-    return res;
+    return await httpClient.get<CheckStatusResponse>('auth/check-status');
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return handleApiErrors(error, 'checkStatus');
   }
 };

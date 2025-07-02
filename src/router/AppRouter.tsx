@@ -36,6 +36,9 @@ const AccountTypesPage = lazy(async () => {
 const CurrenciesPage = lazy(async () => {
   return import('../dashboard/pages/currencies/CurrenciesPage');
 });
+const StaffPage = lazy(async () => {
+  return import('../dashboard/pages/staff/StaffPage');
+});
 
 export const AppRouter = () => {
   const { status } = useAuthStore();
@@ -71,6 +74,7 @@ export const AppRouter = () => {
             element={<AccountTypesPage />}
           />
           <Route path="/dashboard/currencies" element={<CurrenciesPage />} />
+          <Route path="/dashboard/staff" element={<StaffPage />} />
         </Route>
 
         <Route path="/" element={<Navigate to="/auth" />} />

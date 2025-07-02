@@ -1,4 +1,4 @@
-import { ExceptionResponse } from '@/interfaces';
+import { HttpError } from '@/adapters/http/http-client.interface';
 import { BasicUser } from './user.interface';
 
 export interface UserTokenResponse {
@@ -17,18 +17,14 @@ export interface OnlyMessageResponse {
   error?: string;
 }
 
-export type SignUpResponse = UserMessageResponse | ExceptionResponse;
-export type VerifyEmailCodeResponse = UserMessageResponse | ExceptionResponse;
-export type ResendEmailVerificationResponse =
-  | OnlyMessageResponse
-  | ExceptionResponse;
-export type SignInResponse = UserTokenResponse | ExceptionResponse;
-export type ForgotPasswordResponse = OnlyMessageResponse | ExceptionResponse;
-export type ResetPasswordResponse = OnlyMessageResponse | ExceptionResponse;
-export type CheckStatusResponse = UserTokenResponse | ExceptionResponse;
-export type ResendResetPasswordCodeResponse =
-  | OnlyMessageResponse
-  | ExceptionResponse;
-export type ChangePasswordResponse = UserMessageResponse | ExceptionResponse;
-export type DeleteAccountResponse = UserMessageResponse | ExceptionResponse;
-export type UpdateProfileResponse = UserMessageResponse | ExceptionResponse;
+export type SignUpResponse = UserMessageResponse | HttpError;
+export type VerifyEmailCodeResponse = UserMessageResponse | HttpError;
+export type ResendEmailVerificationResponse = OnlyMessageResponse | HttpError;
+export type SignInResponse = UserTokenResponse | HttpError;
+export type ForgotPasswordResponse = OnlyMessageResponse | HttpError;
+export type ResetPasswordResponse = OnlyMessageResponse | HttpError;
+export type CheckStatusResponse = UserTokenResponse | HttpError;
+export type ResendResetPasswordCodeResponse = OnlyMessageResponse | HttpError;
+export type ChangePasswordResponse = UserMessageResponse | HttpError;
+export type DeleteAccountResponse = UserMessageResponse | HttpError;
+export type UpdateProfileResponse = UserMessageResponse | HttpError;

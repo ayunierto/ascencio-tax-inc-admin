@@ -2,11 +2,13 @@ import * as React from 'react';
 import {
   Bot,
   Briefcase,
+  BriefcaseBusinessIcon,
   Calendar,
   Coins,
   CreditCard,
   LayoutDashboard,
   Settings2,
+  UsersRound,
   Wallet,
 } from 'lucide-react';
 
@@ -32,7 +34,7 @@ const data = {
   teams: [
     {
       name: 'Ascencio Tax Inc',
-      logo: Briefcase,
+      logo: BriefcaseBusinessIcon,
       plan: 'Enterprise',
     },
   ],
@@ -45,113 +47,9 @@ const data = {
     { title: 'Account types', url: '/dashboard/account-types', icon: Wallet },
     { title: 'Currencies', url: '/dashboard/currencies', icon: Coins },
     { title: 'Accounts', url: '/dashboard/accounts', icon: CreditCard },
+    { title: 'Staff', url: '/dashboard/staff', icon: UsersRound },
     { title: 'Settings', url: '/dashboard/settings', icon: Settings2 },
   ],
-
-  // navMain: [
-  //   {
-  //     title: 'Services',
-  //     url: '#',
-  //     icon: Briefcase,
-  //     isActive: true,
-  //     items: [
-  //       {
-  //         title: 'List Services',
-  //         url: '#',
-  //       },
-  //       {
-  //         title: 'Starred',
-  //         url: '#',
-  //       },
-  //       {
-  //         title: 'Settings',
-  //         url: '#',
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     title: 'Models',
-  //     url: '#',
-  //     icon: Bot,
-  //     items: [
-  //       {
-  //         title: 'Genesis',
-  //         url: '#',
-  //       },
-  //       {
-  //         title: 'Explorer',
-  //         url: '#',
-  //       },
-  //       {
-  //         title: 'Quantum',
-  //         url: '#',
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     title: 'Documentation',
-  //     url: '#',
-  //     icon: BookOpen,
-  //     items: [
-  //       {
-  //         title: 'Introduction',
-  //         url: '#',
-  //       },
-  //       {
-  //         title: 'Get Started',
-  //         url: '#',
-  //       },
-  //       {
-  //         title: 'Tutorials',
-  //         url: '#',
-  //       },
-  //       {
-  //         title: 'Changelog',
-  //         url: '#',
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     title: 'Settings',
-  //     url: '#',
-  //     icon: Settings2,
-  //     items: [
-  //       {
-  //         title: 'General',
-  //         url: '#',
-  //       },
-  //       {
-  //         title: 'Team',
-  //         url: '#',
-  //       },
-  //       {
-  //         title: 'Billing',
-  //         url: '#',
-  //       },
-  //       {
-  //         title: 'Limits',
-  //         url: '#',
-  //       },
-  //     ],
-  //   },
-  // ],
-  // projects: [
-  //   {
-  //     name: 'Design Engineering',
-  //     url: '#',
-  //     icon: Frame,
-  //   },
-  //   {
-  //     name: 'Sales & Marketing',
-  //     url: '#',
-  //     icon: PieChart,
-  //   },
-  //   {
-  //     name: 'Travel',
-  //     url: '#',
-  //     icon: Map,
-  //   },
-  // ],
 };
 
 interface AppSideBarProps extends React.ComponentProps<typeof Sidebar> {
@@ -218,3 +116,108 @@ export const AppSidebar = ({ toggleSidebar, ...props }: AppSideBarProps) => {
     </Sidebar>
   );
 };
+
+// navMain: [
+//   {
+//     title: 'Services',
+//     url: '#',
+//     icon: Briefcase,
+//     isActive: true,
+//     items: [
+//       {
+//         title: 'List Services',
+//         url: '#',
+//       },
+//       {
+//         title: 'Starred',
+//         url: '#',
+//       },
+//       {
+//         title: 'Settings',
+//         url: '#',
+//       },
+//     ],
+//   },
+//   {
+//     title: 'Models',
+//     url: '#',
+//     icon: Bot,
+//     items: [
+//       {
+//         title: 'Genesis',
+//         url: '#',
+//       },
+//       {
+//         title: 'Explorer',
+//         url: '#',
+//       },
+//       {
+//         title: 'Quantum',
+//         url: '#',
+//       },
+//     ],
+//   },
+//   {
+//     title: 'Documentation',
+//     url: '#',
+//     icon: BookOpen,
+//     items: [
+//       {
+//         title: 'Introduction',
+//         url: '#',
+//       },
+//       {
+//         title: 'Get Started',
+//         url: '#',
+//       },
+//       {
+//         title: 'Tutorials',
+//         url: '#',
+//       },
+//       {
+//         title: 'Changelog',
+//         url: '#',
+//       },
+//     ],
+//   },
+//   {
+//     title: 'Settings',
+//     url: '#',
+//     icon: Settings2,
+//     items: [
+//       {
+//         title: 'General',
+//         url: '#',
+//       },
+//       {
+//         title: 'Team',
+//         url: '#',
+//       },
+//       {
+//         title: 'Billing',
+//         url: '#',
+//       },
+//       {
+//         title: 'Limits',
+//         url: '#',
+//       },
+//     ],
+//   },
+// ],
+// projects: [
+//   {
+//     name: 'Design Engineering',
+//     url: '#',
+//     icon: Frame,
+//   },
+//   {
+//     name: 'Sales & Marketing',
+//     url: '#',
+//     icon: PieChart,
+//   },
+//   {
+//     name: 'Travel',
+//     url: '#',
+//     icon: Map,
+//   },
+// ],
