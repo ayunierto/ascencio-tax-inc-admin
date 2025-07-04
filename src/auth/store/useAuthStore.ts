@@ -116,6 +116,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     get().setUnauthenticated();
     if (response.error === 'Network Error') {
       set({ status: 'checking' });
+      console.warn('Network Error');
     }
     return response;
   },

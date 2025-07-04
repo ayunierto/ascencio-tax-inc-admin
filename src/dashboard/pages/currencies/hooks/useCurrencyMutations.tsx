@@ -8,7 +8,7 @@ import {
 import { CreateCurrencyInputs, UpdateCurrencyInputs } from '../schemas';
 import { createCurrency, deleteCurrency, updateCurrency } from '../actions';
 import { toast } from 'sonner';
-import { ExceptionResponse } from '@/interfaces';
+import { HttpError } from '@/adapters/http/http-client.interface';
 
 type MutationsProps = {
   closeForm: () => void;
@@ -19,7 +19,7 @@ export const useCreateCurrency = ({ closeForm }: MutationsProps) => {
   return useMutation<CreateCurrencyResponse, Error, CreateCurrencyInputs>({
     mutationFn: createCurrency,
     onSuccess: async (response) => {
-      if ('error' in response) {
+      if (response instanceof HttpError) {
         toast.error(response.message);
         return;
       }
@@ -45,14 +45,10 @@ export const useCreateCurrency = ({ closeForm }: MutationsProps) => {
 export const useUpdateCurrency = ({ closeForm }: MutationsProps) => {
   const queryClient = useQueryClient();
 
-  return useMutation<
-    UpdateCurrencyResponse,
-    ExceptionResponse,
-    UpdateCurrencyInputs
-  >({
+  return useMutation<UpdateCurrencyResponse, HttpError, UpdateCurrencyInputs>({
     mutationFn: updateCurrency,
     onSuccess(data, variables) {
-      if ('error' in data) {
+      if (data instanceof HttpError) {
         toast.error(data.message);
         return;
       }
@@ -84,7 +80,7 @@ export const useUpdateCurrency = ({ closeForm }: MutationsProps) => {
 export const useDeleteCurrency = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<DeleteCurrencyResponse, ExceptionResponse, string>({
+  return useMutation<DeleteCurrencyResponse, HttpError, string>({
     mutationFn: deleteCurrency,
     onSuccess(data, variables) {
       if ('error' in data) {

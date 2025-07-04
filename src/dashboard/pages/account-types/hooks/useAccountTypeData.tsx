@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { GetAccountTypesResponse } from '../interfaces';
-import { ExceptionResponse } from '@/interfaces';
 import { getAccountTypes } from '../actions';
+import { HttpError } from '@/adapters/http/http-client.interface';
 
 export const useAccountTypeData = () => {
-  return useQuery<GetAccountTypesResponse, ExceptionResponse>({
+  return useQuery<GetAccountTypesResponse, HttpError>({
     queryKey: ['account-types'],
     queryFn: async () => {
       return await getAccountTypes();

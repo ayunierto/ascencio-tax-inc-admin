@@ -12,7 +12,7 @@ import {
   updateAccountType,
 } from '../actions';
 import { toast } from 'sonner';
-import { ExceptionResponse } from '@/interfaces';
+import { HttpError } from '@/adapters/http/http-client.interface';
 
 type Props = {
   closeForm: () => void;
@@ -58,7 +58,7 @@ export const useUpdateAccountType = ({ closeForm }: Props) => {
 
   return useMutation<
     UpdateAccountTypeResponse,
-    ExceptionResponse,
+    HttpError,
     UpdateAccountTypeInputs
   >({
     mutationFn: updateAccountType,
@@ -94,7 +94,7 @@ export const useUpdateAccountType = ({ closeForm }: Props) => {
 export const useDeleteAccountType = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<DeleteAccountTypeResponse, ExceptionResponse, string>({
+  return useMutation<DeleteAccountTypeResponse, HttpError, string>({
     mutationFn: deleteAccountType,
     onSuccess(data, variables) {
       if ('error' in data) {

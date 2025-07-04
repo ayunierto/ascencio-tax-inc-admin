@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpError } from '@/adapters/http/http-client.interface';
 import { httpClient } from '@/adapters/http/httpClient.adapter';
-import { handleApiErrors } from '@/auth/utils';
 import { capitalizeFirstWord } from '@/utils';
+import { handleApiErrors } from '@/utils/apiErrorHandlers';
 
-// Definimos una interfaz genérica para las operaciones CRUD
 interface ApiService<TEntity, TCreate, TUpdate> {
   getAll: () => Promise<TEntity[] | HttpError>;
   getById: (id: string) => Promise<TEntity | HttpError>;
@@ -13,15 +11,24 @@ interface ApiService<TEntity, TCreate, TUpdate> {
   remove: (id: string) => Promise<TEntity | HttpError>;
 }
 
-// Creamos una factory function que devuelve un servicio para un endpoint específico
+/**
+ * Creates a generic API service for performing CRUD operations on a specified endpoint.
+ *
+ * @template TEntity - The type representing the entity managed by the service.
+ * @template TCreate - The type representing the data required to create a new entity.
+ * @template TUpdate - The type representing the data required to update an existing entity.
+ *
+ * @param endpoint - The API endpoint for the resource.
+ * @returns An object implementing the ApiService interface, providing methods for fetching, creating, updating, and deleting entities.
+ */
 export const createApiService = <TEntity, TCreate, TUpdate>(
   endpoint: string
 ): ApiService<TEntity, TCreate, TUpdate> => ({
   /**
-   * Obtiene todos los registros de un endpoint.
-   * @returns Una promesa que se resuelve con un array de registros.
+   * Get all the records of an Endpoint.
+   * @returns A promise that is resolved with an array of records.
    */
-  getAll: async (): Promise<TEntity[] | HttpError> => {
+  getAll: async () => {
     try {
       return await httpClient.get<TEntity[]>(endpoint);
     } catch (error) {
@@ -31,11 +38,11 @@ export const createApiService = <TEntity, TCreate, TUpdate>(
   },
 
   /**
-   * Obtiene un registro por su ID.
-   * @param id - El ID del registro a obtener.
-   * @returns Una promesa que se resuelve con el registro encontrado.
+   * Get a record for your id.
+   * @param id -The ID of the Registry to be obtained.
+   * @returns A promise that is resolved with the record found.
    */
-  getById: async (id: string): Promise<TEntity | HttpError> => {
+  getById: async (id: string) => {
     try {
       return await httpClient.get<TEntity>(`${endpoint}/${id}`);
     } catch (error) {
@@ -45,23 +52,15 @@ export const createApiService = <TEntity, TCreate, TUpdate>(
   },
 
   /**
-   * Crea un nuevo registro.
-   * @param data - Los datos para el nuevo registro.
-   * @returns Una promesa que se resuelve con el registro creado.
+   * Create a new record.
+   * @param data -The data for the new record.
+   * @returns A promise that is resolved with the created record.
    */
-  create: async (data: TCreate): Promise<TEntity | HttpError> => {
+  create: async (data: TCreate) => {
     try {
-      const formData = new FormData();
-      for (const key in data) {
-        if (Object.prototype.hasOwnProperty.call(data, key)) {
-          const value = (data as any)[key];
-          // Añadimos cada campo al formData.
-          // FormData puede manejar strings, Files, Blobs, etc.
-          formData.append(key, value);
-        }
-      }
       return await httpClient.post<TEntity>(endpoint, {
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
       });
     } catch (error) {
       console.error(`Error creating ${endpoint}:`, error);
@@ -70,24 +69,16 @@ export const createApiService = <TEntity, TCreate, TUpdate>(
   },
 
   /**
-   * Actualiza un registro existente.
-   * @param id - El ID del registro a actualizar.
-   * @param data - Los datos para actualizar el registro.
-   * @returns Una promesa que se resuelve con el registro actualizado.
+   * Update an existing record.
+   * @param id -The ID of the Registry to be updated.
+   * @param data -The data to update the registration.
+   * @returns A promise that is resolved with the updated record.
    */
-  update: async (id: string, data: TUpdate): Promise<TEntity | HttpError> => {
+  update: async (id: string, data: TUpdate) => {
     try {
-      const formData = new FormData();
-      for (const key in data) {
-        if (Object.prototype.hasOwnProperty.call(data, key)) {
-          const value = (data as any)[key];
-          // Añadimos cada campo al formData.
-          // FormData puede manejar strings, Files, Blobs, etc.
-          formData.append(key, value);
-        }
-      }
       return await httpClient.patch<TEntity>(`${endpoint}/${id}`, {
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
       });
     } catch (error) {
       console.error(`Error updating ${endpoint} with id ${id}:`, error);
@@ -96,17 +87,17 @@ export const createApiService = <TEntity, TCreate, TUpdate>(
   },
 
   /**
-   * Elimina un registro por su ID.
-   * @param id - El ID del registro a eliminar.
-   * @returns Una promesa que se resuelve con el registro eliminado.
+   * Eliminate a record for your id.
+   * @param id -The ID of the Registry to be deleted.
+   * @returns A promise that is resolved with the record deleted.
    */
-  remove: async (id: string): Promise<TEntity | HttpError> => {
+  remove: async (id: string) => {
     try {
       return await httpClient.delete<TEntity>(`${endpoint}/${id}`, {
         headers: { 'Content-Type': 'application/json' },
       });
     } catch (error) {
-      console.error(`Error deleting ${endpoint} with id ${id}:`, error);
+      console.error(`Error deleting ${endpoint} with id: ${id}:`, error);
       return handleApiErrors(error, `delete${capitalizeFirstWord(endpoint)}`);
     }
   },

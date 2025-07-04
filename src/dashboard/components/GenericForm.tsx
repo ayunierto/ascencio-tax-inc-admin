@@ -1,41 +1,28 @@
-import { useEffect } from 'react';
-import { useForm, Path } from 'react-hook-form';
+import { ReactNode, useEffect } from 'react';
+import { useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-export interface FormFieldConfig {
-  name: string;
-  label: string;
-  placeholder: string;
-  type?: string;
-}
-
-// Se ajustan las props para alinearse con react-hook-form
+// The props are adjusted to align with react-hook-form
 interface GenericFormProps<TSchema extends z.ZodTypeAny> {
-  schema: TSchema; // El schema ahora es de tipo ZodType<TSchema>
-  fields: FormFieldConfig[];
-  onSubmit: (data: z.infer<TSchema>) => void; // Usamos SubmitHandler<TSchema> para el submit
+  schema: TSchema; // The schema is now zod type Type <TSchema>
+  renderFormFields: (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    form: UseFormReturn<z.TypeOf<TSchema>, any, z.TypeOf<TSchema>>
+  ) => ReactNode;
+  onSubmit: (data: z.infer<TSchema>) => void;
   defaultValues?: Partial<z.infer<TSchema>>;
   isEditMode: boolean;
   isLoading: boolean;
   className?: string;
 }
 
-// Se restringe TSchema para que sea compatible con FieldValues de react-hook-form
 export const GenericForm = <TSchema extends z.ZodTypeAny>({
   schema,
-  fields,
+  renderFormFields,
   onSubmit,
   defaultValues,
   isEditMode,
@@ -47,9 +34,13 @@ export const GenericForm = <TSchema extends z.ZodTypeAny>({
     defaultValues: defaultValues as z.infer<TSchema>,
   });
 
-  // Resetea el formulario cuando el item a editar cambia
+  // Reset the form when the item to edit changes
   useEffect(() => {
-    form.reset(defaultValues as z.infer<TSchema>);
+    if (defaultValues) {
+      form.reset(defaultValues);
+    } else {
+      form.reset({}); // Limpiar el formulario si no hay valores por defecto (modo creación)
+    }
   }, [defaultValues, form]);
 
   return (
@@ -58,11 +49,13 @@ export const GenericForm = <TSchema extends z.ZodTypeAny>({
         onSubmit={form.handleSubmit(onSubmit)}
         className={cn('grid items-start gap-6', className)}
       >
-        {fields.map((field) => (
+        {/* Renderizar los campos del formulario usando la función pasada por props */}
+        {renderFormFields(form)}
+        {/* {fields.map((field) => (
           <FormField
             key={field.name}
             control={form.control}
-            // Hacemos un casting a Path<TSchema> para satisfacer el tipado de 'name'
+            // We make a casting a Path<TSchema> to satisfy the type of 'name'
             name={field.name as Path<z.infer<TSchema>>}
             render={({ field: formField }) => (
               <FormItem>
@@ -78,7 +71,7 @@ export const GenericForm = <TSchema extends z.ZodTypeAny>({
               </FormItem>
             )}
           />
-        ))}
+        ))} */}
         <Button type="submit" disabled={isLoading} loading={isLoading}>
           {isEditMode ? 'Update' : 'Create'}
         </Button>

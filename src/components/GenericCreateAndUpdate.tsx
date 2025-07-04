@@ -19,15 +19,18 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
+import { capitalizeFirstWord } from '@/utils';
 
-// Props para el componente genérico de creación y actualización
 interface Props {
   open: boolean;
   setOpen: (open: boolean) => void;
   onClose: () => void;
   entityName: string;
   isEditMode: boolean;
-  children: ReactNode; // El formulario genérico se pasará como hijo
+  /**
+   * Form
+   */
+  children: ReactNode;
 }
 
 export const GenericCreateAndUpdate = ({
@@ -40,23 +43,22 @@ export const GenericCreateAndUpdate = ({
 }: Props) => {
   const isMobile = useIsMobile();
 
-  // Función para manejar el cambio de estado del modal/drawer
+  // Function to handle the change of state of the modal/drawer
   const handleOpenChange = (openState: boolean) => {
     if (!openState) {
-      onClose(); // Llama a onClose cuando se cierra
+      onClose(); // Call Onclose when it closes
     }
     setOpen(openState);
   };
 
-  // Capitaliza el nombre de la entidad para mostrarlo en la UI
-  const capitalizedEntity =
-    entityName.charAt(0).toUpperCase() + entityName.slice(1);
+  // Capitalizes the entity's name to show it in the UI
+  const capitalizedEntity = capitalizeFirstWord(entityName);
   const title = isEditMode ? `Edit ${entityName}` : `Add ${entityName}`;
   const description = isEditMode
     ? `Update a ${entityName} here. Click save when you're done.`
     : `Create a new ${entityName} here. Click save when you're done.`;
 
-  // Renderiza un Drawer en dispositivos móviles
+  // Render a draw on mobile devices
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={handleOpenChange}>
@@ -68,7 +70,7 @@ export const GenericCreateAndUpdate = ({
             <DrawerTitle>{title}</DrawerTitle>
             <DrawerDescription>{description}</DrawerDescription>
           </DrawerHeader>
-          <div className="px-4">{children}</div> {/* Renderiza el formulario */}
+          <div className="px-4">{children}</div> {/* Render the form */}
           <DrawerFooter className="pt-2">
             <DrawerClose asChild>
               <Button variant="outline">Cancel</Button>
@@ -79,7 +81,7 @@ export const GenericCreateAndUpdate = ({
     );
   }
 
-  // Renderiza un Dialog en dispositivos de escritorio
+  // Render a dialog on desktop devices
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
@@ -92,7 +94,7 @@ export const GenericCreateAndUpdate = ({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        {children} {/* Renderiza el formulario */}
+        {children} {/* Render the form */}
       </DialogContent>
     </Dialog>
   );

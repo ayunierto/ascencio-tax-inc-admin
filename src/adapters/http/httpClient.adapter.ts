@@ -145,20 +145,20 @@ export class HttpClientAdapter implements HttpAdapter {
         }
       }
 
-      // Si la respuesta no es exitosa (status code fuera de 200-299)
+      //If the answer is not successful (status code out of 200-299)
       if (!response.ok) {
-        // responseData podría contener el objeto Exception de tu backend
+        // responseData could contain the exception object of your backend
         const errorMessage =
           responseData?.message || `HTTP error ${response.status}`;
         throw new HttpError(errorMessage, response.status, responseData);
       }
 
-      // Si la respuesta es exitosa
+      // If the response is successful
       return responseData as T;
     } catch (error) {
       clearTimeout(timeoutId);
 
-      // Si ya es un HttpError (lanzado por !response.ok),
+      // If it is already an HttpError (launched by! Response.Ok),
       if (error instanceof HttpError) {
         throw error;
       }
@@ -169,17 +169,16 @@ export class HttpClientAdapter implements HttpAdapter {
         throw new NetworkError('The request timed out. Please try again.');
       }
 
-      // Otros errores (fallo de red, DNS, CORS, etc.) se suelen manifestar como TypeError
+      // Other errors (failed network , DNS, CORS, etc.)
       if (error instanceof Error) {
         throw new NetworkError(`Unable to complete request. ${error.message}`);
       }
 
-      // Error completamente inesperado
+      // Completely unexpected error
       throw new Error('An unexpected error occurred during the request.');
     }
   }
 
-  // Los métodos públicos no cambian
   async get<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
     return this.request<T>(endpoint, options, 'GET');
   }
@@ -193,11 +192,11 @@ export class HttpClientAdapter implements HttpAdapter {
   }
 
   async put<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-    return this.request<T>(endpoint, options, 'PATCH');
+    return this.request<T>(endpoint, options, 'PUT');
   }
 
   async delete<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-    return this.request<T>(endpoint, options, 'PATCH');
+    return this.request<T>(endpoint, options, 'DELETE');
   }
 }
 

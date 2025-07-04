@@ -3,6 +3,8 @@ import { DataTable } from '@/components/DataTable/DataTable';
 import { useCurrencies } from './hooks/useCurrency';
 import { useCurrencyData, useCurrencyForm } from './hooks';
 import { CreateAndUpdateCurrency } from './components';
+import { LoadingError } from '@/dashboard/components';
+import { HttpError } from '@/adapters/http/http-client.interface';
 
 export const CurrenciesPage = () => {
   const { openFormToEdit, currencyToEdit, isOpen, closeForm, setIsOpen } =
@@ -15,13 +17,12 @@ export const CurrenciesPage = () => {
     return <Loader />;
   }
 
-  if (!currencies || 'error' in currencies) {
-    return (
-      <div className="w-screen h-screen items-center justify-center flex-grow">
-        Error loading account types:{' '}
-        {currencies?.message || 'An unexpected error occurred.'}
-      </div>
-    );
+  if (!currencies) {
+    return <LoadingError name="currencies" />;
+  }
+
+  if (currencies instanceof HttpError) {
+    return <LoadingError name="currencies" message={currencies.message} />;
   }
 
   return (

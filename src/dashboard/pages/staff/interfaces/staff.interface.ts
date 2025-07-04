@@ -1,6 +1,6 @@
 export interface Staff {
   id: string;
-  name: string;
+  firstName: string;
   lastName: string;
   isActive: boolean;
   createdAt: Date;
