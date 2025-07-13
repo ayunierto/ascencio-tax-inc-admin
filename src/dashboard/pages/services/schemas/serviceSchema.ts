@@ -16,5 +16,5 @@ export const updateServiceSchema = createServiceSchema.extend({
   id: z.string().uuid(),
 });
 
-export type CreateServiceInputs = z.ZodType<typeof createServiceSchema>;
-export type UpdateServiceInputs = z.infer<typeof updateServiceSchema>;
+export type CreateServiceRequest = z.ZodType<typeof createServiceSchema>;
+export type UpdateServiceRequest = z.infer<typeof updateServiceSchema>;

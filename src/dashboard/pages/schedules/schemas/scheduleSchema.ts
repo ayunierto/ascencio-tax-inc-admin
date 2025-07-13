@@ -10,5 +10,5 @@ export const updateScheduleSchema = createScheduleSchema.extend({
   id: z.string().uuid(),
 });
 
-export type CreateScheduleInputs = z.ZodType<typeof createScheduleSchema>;
-export type UpdateScheduleInputs = z.infer<typeof updateScheduleSchema>;
+export type CreateScheduleRequest = z.ZodType<typeof createScheduleSchema>;
+export type UpdateScheduleRequest = z.infer<typeof updateScheduleSchema>;

@@ -19,7 +19,7 @@ export interface OnlyMessageResponse {
 
 export type SignUpResponse = UserMessageResponse | HttpError;
 export type VerifyEmailCodeResponse = UserMessageResponse | HttpError;
-export type ResendEmailVerificationResponse = OnlyMessageResponse | HttpError;
+export type ResendEmailCodeResponse = OnlyMessageResponse | HttpError;
 export type SignInResponse = UserTokenResponse | HttpError;
 export type ForgotPasswordResponse = OnlyMessageResponse | HttpError;
 export type ResetPasswordResponse = OnlyMessageResponse | HttpError;

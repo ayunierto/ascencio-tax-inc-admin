@@ -1,1 +1,1 @@
-export * from './account-type.schema';
+export * from './AccountTypeSchema';

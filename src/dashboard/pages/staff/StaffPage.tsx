@@ -1,20 +1,12 @@
-import { Staff } from './interfaces';
-import {
-  // FormFieldConfig,
-  GenericForm,
-  LoadingError,
-} from '@/dashboard/components';
-import { useStaffColumns } from './hooks/useStaffColumns';
-import { createStaffSchema, UpdateStaffInputs } from './schemas';
 import { useState } from 'react';
-import { createApiService } from '@/services/apiService';
+
+// Generic imports
 import { HttpError } from '@/adapters/http/http-client.interface';
-import { useQuery } from '@tanstack/react-query';
-import { CreateAccountInputs } from '../account/schemas';
 import { useMutations } from '@/hooks/useMutations';
+import { GenericForm, LoadingError } from '@/dashboard/components';
+import { DataTable } from '@/components/DataTable/DataTable';
 import { Loader } from '@/components/Loader';
 import { GenericCreateAndUpdate } from '@/components/GenericCreateAndUpdate';
-import { DataTable } from '@/components/DataTable/DataTable';
 import {
   FormControl,
   FormDescription,
@@ -25,17 +17,16 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { Checkbox } from '@radix-ui/react-checkbox';
-import { Service } from '../services/interfaces';
-import {
-  CreateServiceInputs,
-  UpdateServiceInputs,
-} from '../services/schemas/serviceSchema';
-import { Schedule } from '../schedules/interfaces/schedule.interface';
-import {
-  CreateScheduleInputs,
-  UpdateScheduleInputs,
-} from '../schedules/schemas/scheduleSchema';
+import { Checkbox } from '@/components/ui/checkbox';
+
+// Hooks
+import { useStaffColumns, useStaffData } from './hooks';
+
+// Schemas and interfaces
+import { Staff } from './interfaces';
+import { createStaffSchema } from './schemas';
+import { useServicesData } from '../services/hooks';
+import { useSchedulesData } from '../schedules/hooks';
 
 export const StaffPage = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -47,41 +38,11 @@ export const StaffPage = () => {
   };
 
   // ---Requests and mutations with React Query ---
-  const apiServiceStaff = createApiService<
-    Staff,
-    CreateAccountInputs,
-    UpdateStaffInputs
-  >('staff');
-  const { data: staff, isFetching } = useQuery<HttpError | Staff[], Error>({
-    queryKey: ['staff'],
-    queryFn: () => apiServiceStaff.getAll(),
-  });
+  const { staff, apiServiceStaff, isFetchingStaff } = useStaffData();
 
-  const apiServiceServices = createApiService<
-    Service,
-    CreateServiceInputs,
-    UpdateServiceInputs
-  >('services');
-  const { data: services, isFetching: isFetchingServices } = useQuery<
-    HttpError | Service[],
-    Error
-  >({
-    queryKey: ['services'],
-    queryFn: () => apiServiceServices.getAll(),
-  });
+  const { services, isFetchingServices } = useServicesData();
 
-  const apiServiceSchedules = createApiService<
-    Schedule,
-    CreateScheduleInputs,
-    UpdateScheduleInputs
-  >('schedule');
-  const { data: schedules, isFetching: isFetchingSchedules } = useQuery<
-    HttpError | Schedule[],
-    Error
-  >({
-    queryKey: ['schedules'],
-    queryFn: () => apiServiceSchedules.getAll(),
-  });
+  const { schedules, isFetchingSchedules } = useSchedulesData();
 
   // Mutations
   const { createMutation, updateMutation, deleteMutation } = useMutations({
@@ -97,16 +58,16 @@ export const StaffPage = () => {
     setIsFormOpen(true);
   };
 
-  const handleDeleteStaff = (staffId: string) => {
-    deleteMutation.mutate(staffId);
+  const handleDeleteStaff = async (staffId: string) => {
+    await deleteMutation.mutateAsync(staffId);
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleSubmit = (formData: any) => {
+  const handleSubmit = async (formData: any) => {
     if (staffToEdit) {
-      updateMutation.mutate({ id: staffToEdit.id, data: formData });
+      await updateMutation.mutateAsync({ id: staffToEdit.id, data: formData });
     } else {
-      createMutation.mutate(formData);
+      await createMutation.mutateAsync(formData);
     }
   };
 
@@ -116,15 +77,15 @@ export const StaffPage = () => {
     deletingItemId: deleteMutation.isPending ? deleteMutation.variables : null,
   });
 
-  // Loading states
-  // Staff loading state
-  if (isFetching) return <Loader showText text="Loading staff..." />;
+  // --- LOADING STATES ---
+  // Staff loading state and error handling
+  if (isFetchingStaff) return <Loader showText text="Loading staff..." />;
   if (!staff) return <LoadingError name="staff" />;
   if (staff instanceof HttpError) {
     return <LoadingError name="staff" message={staff.message} />;
   }
 
-  // Services loading state
+  // Services loading state and error handling
   if (isFetchingServices) return <Loader text="Loading services..." showText />;
   if (!services) {
     return <LoadingError name="services" />;
@@ -133,7 +94,7 @@ export const StaffPage = () => {
     return <LoadingError name="services" message={services.message} />;
   }
 
-  // Schedules loading state
+  // Schedules loading state and error handling
   if (isFetchingSchedules)
     return <Loader text="Loading schedules..." showText />;
   if (!schedules) {

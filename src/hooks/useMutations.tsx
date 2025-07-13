@@ -30,14 +30,33 @@ export const useMutations = <
 
   const handleSuccess = (
     action: 'created' | 'updated' | 'deleted',
-    data: TEntity | HttpError
+    data: TEntity | HttpError,
+    variables?: TCreate | UpdateVariables<TUpdate> | string
   ) => {
     if (data instanceof HttpError) {
       toast.error(data.message);
       return;
     }
     toast.success(`${data.name || entityName} has been ${action}.`);
-    queryClient.invalidateQueries({ queryKey });
+
+    // queryClient.invalidateQueries({ queryKey });
+    // Update the query data optimistically
+    queryClient.setQueryData<TEntity[]>(queryKey, (oldData) => {
+      if (!oldData) return [data];
+      if (action === 'created') {
+        return [...oldData, data];
+      }
+      if (action === 'updated') {
+        return oldData.map((item) => (item.id === data.id ? data : item));
+      }
+      if (action === 'deleted') {
+        if (typeof variables === 'string') {
+          // If variables is a string, it is the id of the item to delete
+          return oldData.filter((item) => item.id !== variables);
+        }
+      }
+      return oldData;
+    });
     onClose();
   };
 
@@ -48,7 +67,7 @@ export const useMutations = <
 
   const createMutation = useMutation<TEntity | HttpError, Error, TCreate>({
     mutationFn: service.create,
-    onSuccess: (data) => handleSuccess('created', data),
+    onSuccess: (data, variables) => handleSuccess('created', data, variables),
     onError: (error) => handleError(error, 'creation'),
   });
 
@@ -58,13 +77,13 @@ export const useMutations = <
     UpdateVariables<TUpdate>
   >({
     mutationFn: ({ id, data }) => service.update(id, data),
-    onSuccess: (data) => handleSuccess('updated', data),
+    onSuccess: (data, variables) => handleSuccess('updated', data, variables),
     onError: (error) => handleError(error, 'update'),
   });
 
   const deleteMutation = useMutation<TEntity | HttpError, Error, string>({
     mutationFn: service.remove,
-    onSuccess: (data) => handleSuccess('deleted', data),
+    onSuccess: (data, variables) => handleSuccess('deleted', data, variables),
     onError: (error) => handleError(error, 'deletion'),
   });
 

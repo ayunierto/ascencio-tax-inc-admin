@@ -41,13 +41,13 @@ const data = {
 
   navItems: [
     { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
+    { title: 'Currencies', url: '/dashboard/currencies', icon: Coins },
+    { title: 'Account types', url: '/dashboard/account-types', icon: Wallet },
+    { title: 'Accounts', url: '/dashboard/accounts', icon: CreditCard },
     { title: 'Users', url: '/dashboard/users', icon: Bot },
+    { title: 'Staff', url: '/dashboard/staff', icon: UsersRound },
     { title: 'Services', url: '/dashboard/services', icon: Briefcase },
     { title: 'Appointments', url: '/dashboard/appointments', icon: Calendar },
-    { title: 'Account types', url: '/dashboard/account-types', icon: Wallet },
-    { title: 'Currencies', url: '/dashboard/currencies', icon: Coins },
-    { title: 'Accounts', url: '/dashboard/accounts', icon: CreditCard },
-    { title: 'Staff', url: '/dashboard/staff', icon: UsersRound },
     { title: 'Settings', url: '/dashboard/settings', icon: Settings2 },
   ],
 };

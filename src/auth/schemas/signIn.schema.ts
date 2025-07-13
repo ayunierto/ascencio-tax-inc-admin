@@ -9,4 +9,4 @@ export const signInSchema = z.object({
   }),
 });
 
-export type SignInFormInputs = z.infer<typeof signInSchema>;
+export type SignInRequest = z.infer<typeof signInSchema>;

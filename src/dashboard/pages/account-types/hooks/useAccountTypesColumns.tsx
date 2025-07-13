@@ -1,22 +1,21 @@
 import { Checkbox } from '@/components/ui/checkbox';
-import { Staff } from '../interfaces';
+import { AccountType } from '../interfaces';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTableColumnHeader } from '@/components/DataTable/DataTableColumHeader';
 import { DataTableActions } from '@/components/DataTable/DataTableActions';
-import { Badge } from '@/components/ui/badge';
 
-interface useStaffProps {
-  onEdit: (staff: Staff) => void;
-  onDelete: (staffId: string) => Promise<void>;
+interface useAccountTypesProps {
+  onEdit: (accountType: AccountType) => void;
+  onDelete: (accountTypeId: string) => Promise<void>;
   deletingItemId: string | null;
 }
 
-export const useStaffColumns = ({
+export const useAccountTypesColumns = ({
   onDelete,
   onEdit,
   deletingItemId,
-}: useStaffProps) => {
-  const columns: ColumnDef<Staff>[] = [
+}: useAccountTypesProps) => {
+  const columns: ColumnDef<AccountType>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -40,45 +39,24 @@ export const useStaffColumns = ({
       enableHiding: false,
     },
     {
-      accessorKey: 'firstName',
+      accessorKey: 'name',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="First name" />
+        <DataTableColumnHeader column={column} title="Name" />
       ),
     },
     {
-      accessorKey: 'lastName',
+      accessorKey: 'description',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Last name" />
+        <DataTableColumnHeader column={column} title="Description" />
       ),
     },
-    {
-      accessorKey: 'isActive',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="State" />
-      ),
-      cell: ({ row }) => {
-        return (
-          <div>
-            {row.original.isActive ? (
-              <Badge
-                variant="secondary"
-                className="bg-blue-500 text-white dark:bg-blue-600"
-              >
-                Active
-              </Badge>
-            ) : (
-              <Badge variant="destructive">Inactive</Badge>
-            )}
-          </div>
-        );
-      },
-    },
+
     {
       id: 'actions',
       cell: ({ row }) => {
         return (
           <DataTableActions
-            entityName={`${row.original.firstName}`}
+            entityName={`${row.original.name}`}
             onEdit={() => onEdit(row.original)}
             onDelete={() => onDelete(row.original.id)}
             isDeleting={deletingItemId === row.original.id}

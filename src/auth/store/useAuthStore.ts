@@ -1,34 +1,27 @@
 import { create } from 'zustand';
 
 import {
-  SignUpRequest,
   SignUpResponse,
   VerifyEmailCodeResponse,
-  VerifyEmailCodeRequest,
   SignInResponse,
   ForgotPasswordResponse,
-  ForgotPasswordRequest,
-  ResetPasswordRequest,
   ResetPasswordResponse,
   DeleteAccountResponse,
   BasicUser,
-  SignInRequest,
   CheckStatusResponse,
   UpdateProfileResponse,
-  UpdateProfileRequest,
-  DeleteAccountRequest,
 } from '../interfaces';
-import {
-  checkStatus,
-  deleteAccount,
-  forgotPassword,
-  resetPassword,
-  singIn,
-  signUp,
-  verifyEmailCode,
-  updateProfile,
-} from '../actions';
 import { storageAdapter } from '@/adapters/StorageAdapter';
+import { authService } from '../services/AuthService';
+import {
+  DeleteAccountRequest,
+  ForgotPasswordRequest,
+  ResetPasswordRequest,
+  SignInRequest,
+  SignUpRequest,
+  UpdateProfileRequest,
+  VerifyEmailCodeRequest,
+} from '../schemas';
 
 export type AuthStatus = 'authenticated' | 'unauthenticated' | 'checking';
 
@@ -60,7 +53,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   user: undefined,
 
   signUp: async (data: SignUpRequest) => {
-    const response = await signUp(data);
+    const response = await authService.signUp(data);
     if ('user' in response) {
       set({ user: response.user });
     }
@@ -68,12 +61,12 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   },
 
   verifyEmailCode: async (data: VerifyEmailCodeRequest) => {
-    const response = await verifyEmailCode(data);
+    const response = await authService.verifyEmailCode(data);
     return response;
   },
 
   signIn: async (credentials: SignInRequest) => {
-    const response = await singIn(credentials);
+    const response = await authService.signIn(credentials);
 
     if ('access_token' in response) {
       await storageAdapter.setAccessToken(response.access_token);
@@ -85,7 +78,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   },
 
   updateProfile: async (data: UpdateProfileRequest) => {
-    const response = await updateProfile(data);
+    const response = await authService.updateProfile(data);
     if ('user' in response) {
       set({ user: response.user });
     }
@@ -93,7 +86,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   },
 
   deleteAccount: async (data: DeleteAccountRequest) => {
-    const response = await deleteAccount(data);
+    const response = await authService.deleteAccount(data);
 
     if ('error' in response) {
       return response;
@@ -105,7 +98,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   },
 
   checkStatus: async () => {
-    const response = await checkStatus();
+    const response = await authService.checkStatus();
 
     if ('access_token' in response) {
       await storageAdapter.setAccessToken(response.access_token);
@@ -127,7 +120,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   },
 
   forgotPassword: async (data: ForgotPasswordRequest) => {
-    const response = await forgotPassword(data);
+    const response = await authService.forgotPassword(data);
     set({
       user: {
         email: data.email,
@@ -142,15 +135,15 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   },
 
   resetPassword: async (data: ResetPasswordRequest) => {
-    const response = await resetPassword(data);
+    const response = await authService.resetPassword(data);
     return response;
   },
 
   setAuthenticated: (access_token: string, user: BasicUser) => {
     set({
       status: 'authenticated',
-      access_token: access_token,
-      user: user,
+      access_token,
+      user,
     });
   },
 

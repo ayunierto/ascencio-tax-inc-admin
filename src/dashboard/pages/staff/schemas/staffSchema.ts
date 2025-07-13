@@ -20,5 +20,5 @@ export const updateStaffSchema = createStaffSchema.extend({
   id: z.string().uuid(),
 });
 
-export type CreateStaffInputs = z.ZodType<typeof createStaffSchema>;
-export type UpdateStaffInputs = z.infer<typeof updateStaffSchema>;
+export type CreateStaffRequest = z.ZodType<typeof createStaffSchema>;
+export type UpdateStaffRequest = z.infer<typeof updateStaffSchema>;

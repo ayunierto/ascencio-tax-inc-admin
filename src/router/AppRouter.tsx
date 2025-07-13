@@ -18,9 +18,6 @@ const DashboardPage = lazy(async () => {
 const AppointmentsPage = lazy(async () => {
   return import('../dashboard/pages/appointments/pages/AppointmentsPage');
 });
-const ServicesPage = lazy(async () => {
-  return import('../dashboard/pages/services/pages/ServicesPage');
-});
 const SettingsPage = lazy(async () => {
   return import('../dashboard/pages/settings/pages/SettingsPage');
 });
@@ -32,6 +29,9 @@ const SignupPage = lazy(async () => {
 });
 const AccountTypesPage = lazy(async () => {
   return import('../dashboard/pages/account-types/AccountTypesPage');
+});
+const AccountPage = lazy(async () => {
+  return import('../dashboard/pages/accounts/AccountsPage');
 });
 const CurrenciesPage = lazy(async () => {
   return import('../dashboard/pages/currencies/CurrenciesPage');
@@ -63,17 +63,17 @@ export const AppRouter = () => {
         >
           <Route index element={<DashboardPage />} />
           <Route path="/dashboard/users" element={<UsersPage />} />
-          <Route path="/dashboard/services" element={<ServicesPage />} />
+          <Route path="/dashboard/currencies" element={<CurrenciesPage />} />
+          <Route
+            path="/dashboard/account-types"
+            element={<AccountTypesPage />}
+          />
           <Route
             path="/dashboard/appointments"
             element={<AppointmentsPage />}
           />
           <Route path="/dashboard/settings" element={<SettingsPage />} />
-          <Route
-            path="/dashboard/account-types"
-            element={<AccountTypesPage />}
-          />
-          <Route path="/dashboard/currencies" element={<CurrenciesPage />} />
+          <Route path="/dashboard/accounts" element={<AccountPage />} />
           <Route path="/dashboard/staff" element={<StaffPage />} />
         </Route>
 

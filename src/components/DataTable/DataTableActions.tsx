@@ -1,4 +1,3 @@
-// components/tables/ResourceActions.tsx
 import {
   Dialog,
   DialogContent,
@@ -20,7 +19,8 @@ import { Button } from '@/components/ui/button';
 import { Edit, MoreHorizontal, Trash2 } from 'lucide-react';
 
 interface DataTableActionsProps {
-  entityName: string; // El nombre para mostrar en el diálogo (ej. "el usuario 'Alcides'")
+  // item: TEntity
+  entityName: string; // The name to show in the dialogue (in. "The user 'John Doe' will be deleted")
   onEdit: () => void;
   onDelete: () => void;
   isDeleting: boolean;
@@ -32,6 +32,14 @@ export const DataTableActions = ({
   onDelete,
   isDeleting = false,
 }: DataTableActionsProps) => {
+  const handleDelete = async () => {
+    await onDelete();
+  };
+
+  const handleEdit = () => {
+    onEdit();
+  };
+
   return (
     <Dialog>
       <DropdownMenu>
@@ -43,7 +51,7 @@ export const DataTableActions = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem onClick={onEdit}>
+          <DropdownMenuItem onClick={handleEdit}>
             <Edit className="mr-2 h-4 w-4" /> Edit
           </DropdownMenuItem>
           <DropdownMenuSeparator />
@@ -66,7 +74,7 @@ export const DataTableActions = ({
         <DialogFooter>
           <Button
             variant="destructive"
-            onClick={onDelete}
+            onClick={handleDelete}
             loading={isDeleting}
             disabled={isDeleting}
           >

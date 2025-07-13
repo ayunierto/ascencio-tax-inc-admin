@@ -27,9 +27,6 @@ interface Props {
   onClose: () => void;
   entityName: string;
   isEditMode: boolean;
-  /**
-   * Form
-   */
   children: ReactNode;
 }
 

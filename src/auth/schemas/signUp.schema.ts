@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { SignUpRequest } from '../interfaces';
 
 export const signUpSchema = z
   .object({
@@ -29,6 +28,6 @@ export const signUpSchema = z
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords must match',
     path: ['confirmPassword'],
-  }) satisfies z.ZodType<SignUpRequest>;
+  });
 
-export type SignUpFormInputs = z.infer<typeof signUpSchema>;
+export type SignUpRequest = z.infer<typeof signUpSchema>;

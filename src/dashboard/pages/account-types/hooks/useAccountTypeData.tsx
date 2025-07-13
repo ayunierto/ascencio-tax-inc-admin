@@ -1,14 +1,26 @@
 import { useQuery } from '@tanstack/react-query';
-import { GetAccountTypesResponse } from '../interfaces';
-import { getAccountTypes } from '../actions';
+import { createApiService } from '@/services/apiService';
 import { HttpError } from '@/adapters/http/http-client.interface';
+import { AccountType } from '../interfaces';
+import { CreateAccountTypeRequest, UpdateAccountTypeRequest } from '../schemas';
 
 export const useAccountTypeData = () => {
-  return useQuery<GetAccountTypesResponse, HttpError>({
+  const apiServiceAccountTypes = createApiService<
+    AccountType,
+    CreateAccountTypeRequest,
+    UpdateAccountTypeRequest
+  >('account-types');
+  const { data: accountTypes, isFetching: isFetchingAccountTypes } = useQuery<
+    HttpError | AccountType[],
+    Error
+  >({
     queryKey: ['account-types'],
-    queryFn: async () => {
-      return await getAccountTypes();
-    },
-    staleTime: 1000 * 60 * 5,
+    queryFn: () => apiServiceAccountTypes.getAll(),
   });
+
+  return {
+    accountTypes,
+    isFetchingAccountTypes,
+    apiServiceAccountTypes,
+  };
 };

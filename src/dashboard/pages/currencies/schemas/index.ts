@@ -1,1 +1,1 @@
-export * from './currencies.schema';
+export * from './currenciesSchema';
