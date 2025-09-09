@@ -1,7 +1,7 @@
 import { ToggleTheme } from '@/components/ToggleTheme';
 import { Link, Outlet } from 'react-router';
 
-export const AuthLayout = () => {
+const AuthLayout = () => {
   return (
     <div className="flex bg-muted min-h-svh w-full flex-col">
       <div className="flex items-center justify-end px-4 h-12">
@@ -24,3 +24,6 @@ export const AuthLayout = () => {
     </div>
   );
 };
+
+
+export default AuthLayout

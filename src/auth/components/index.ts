@@ -1,3 +1,3 @@
-export * from './PrivateRoute';
-export * from './SigninForm';
-export * from './SignupForm';
+export * from "./PrivateRoute";
+export * from "./SignInForm";
+export * from "./SignUpForm";

@@ -1,27 +1,13 @@
-import { Exception } from '@/interfaces/exception.interface';
+import { api } from "@/api/api";
 
-export const resendCode = async (
-  username: string,
-  verificationPlatform: 'email' | 'phone' = 'email'
-): Promise<Exception> => {
-  const API_URL = process.env.EXPO_PUBLIC_API_URL;
-
+export const resendCode = async (email: string) => {
   try {
-    const response = await fetch(`${API_URL}/auth/resend-code`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        username: username.toLocaleLowerCase().trim(),
-        verificationPlatform: verificationPlatform,
-      }),
+    const { data } = await api.post("/auth/resend-email-code", {
+      email: email.toLocaleLowerCase().trim(),
     });
 
-    const data: Exception = await response.json();
     return data;
   } catch (error) {
-    console.error(error);
-    throw new Error('Resend Code: Error sending verification code');
+    throw error;
   }
 };

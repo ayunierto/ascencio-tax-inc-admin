@@ -1,6 +1,6 @@
-import { Loader as Loading } from 'lucide-react';
+import { Loader2 } from "lucide-react";
 
-interface LoaderProps extends React.ComponentProps<'div'> {
+interface LoaderProps extends React.ComponentProps<"div"> {
   className?: string;
   showText?: boolean;
   text?: string;
@@ -9,20 +9,18 @@ interface LoaderProps extends React.ComponentProps<'div'> {
 export const Loader = ({
   className,
   showText,
-  text,
+  text = "Loading...",
   fullScreen,
 }: LoaderProps) => {
   return (
     <div
       className={`flex ${
-        fullScreen ? 'h-screen w-screen' : ' w-full'
+        fullScreen ? "h-screen w-screen" : " w-full"
       } items-center justify-center flex-grow ${className}`}
     >
-      <Loading className="h-8 w-8 animate-spin text-blue-600" />
+      <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
       {showText && (
-        <span className="ml-2 text-gray-600 dark:text-gray-400">
-          {text || 'Loading...'}
-        </span>
+        <span className="ml-2 text-gray-600 dark:text-gray-400">{text}</span>
       )}
     </div>
   );

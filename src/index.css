@@ -110,13 +110,25 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+.open-sans {
+  font-family: "Open Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-open-sans;
   }
+}
+
+@theme {
+  --font-open-sans: "Open Sans", "Montserrat", sans-serif;
 }
 
 /* Styles for navigators WebKit (Chrome, Edge, Safari) */
@@ -145,5 +157,3 @@
   scrollbar-width: thin; /* 'auto' | 'thin' | 'none' */
   scrollbar-color: #888 #3333; /* Thumb color and track color */
 }
-
-
