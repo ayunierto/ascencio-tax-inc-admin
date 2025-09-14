@@ -1,5 +1,9 @@
-export const DashboardPage = () => {
-  return <div>DashboardPage</div>;
-};
+import { AdminHeader } from "@/admin/components/AdminHeader";
 
-export default DashboardPage;
+export const DashboardPage = () => {
+  return (
+    <div>
+      <AdminHeader title="Dashboard" />
+    </div>
+  );
+};

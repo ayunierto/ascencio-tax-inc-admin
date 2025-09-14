@@ -107,6 +107,9 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   },
 
   signIn: async (credentials: SignInRequest) => {
+    // Store the email temporarily for verification purposes
+    set({ tempEmail: credentials.email });
+
     try {
       const response = await signInAction(credentials);
       StorageAdapter.setItem("access_token", response.access_token);
@@ -137,26 +140,23 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   },
 
   forgotPassword: async (data: ForgotPasswordRequest) => {
-    const response = await forgotPasswordAction(data);
-    set({
-      user: {
-        email: data.email,
-        createdAt: "",
-        id: "",
-        lastName: "",
-        firstName: "",
-        roles: [],
-        updatedAt: "",
-        countryCode: "",
-        phoneNumber: "",
-        lastLoginAt: "",
-      },
-    });
-    return response;
+    try {
+      const response = await forgotPasswordAction(data);
+      set({ tempEmail: data.email });
+      return response;
+    } catch (error) {
+      console.error("Error sending forgot password request", error);
+      throw error;
+    }
   },
 
   resetPassword: async (data: ResetPasswordRequest) => {
-    const response = await resetPasswordAction(data);
-    return response;
+    try {
+      const response = await resetPasswordAction(data);
+      return response;
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      throw error;
+    }
   },
 }));

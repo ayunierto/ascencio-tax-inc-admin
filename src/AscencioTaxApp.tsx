@@ -19,7 +19,7 @@ const queryClient = new QueryClient();
 const CheckAuthProvider = ({ children }: PropsWithChildren) => {
   const { checkAuthStatus } = useAuthStore();
   const { isLoading } = useQuery({
-    queryKey: ["check-auth"],
+    queryKey: ["auth"],
     queryFn: checkAuthStatus,
     retry: false,
     refetchInterval: 1000 * 60 * 5, // 5 minutes
@@ -39,7 +39,7 @@ export const AscencioTaxApp = () => {
           <CheckAuthProvider>
             <RouterProvider router={appRouter} />
           </CheckAuthProvider>
-          <Toaster position="top-center" />
+          <Toaster position="top-center" richColors />
         </TooltipProvider>
         <ReactQueryDevtools />
       </ThemeProvider>

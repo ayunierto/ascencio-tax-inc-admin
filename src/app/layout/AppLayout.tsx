@@ -3,10 +3,12 @@ import { Header } from "../components/Header";
 
 export const AppLayout = () => {
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col">
       <Header />
 
-      <Outlet />
+      <main className="p-2 md:p-6">
+        <Outlet />
+      </main>
     </div>
   );
 };

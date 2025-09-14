@@ -1,7 +1,11 @@
 import { api } from "@/api/api";
-import { Service } from "@/interfaces/service.response";
+import { ServicesResponse } from "@/interfaces/get-all-services.response";
 
-export const getServicesAction = async (): Promise<Service[]> => {
-  const { data } = await api.get<Service[]>("/services");
-  return data;
+export const getServicesAction = async (): Promise<ServicesResponse> => {
+  try {
+    const { data } = await api.get<ServicesResponse>("/services");
+    return data;
+  } catch (error) {
+    throw error;
+  }
 };

@@ -1,12 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -58,8 +52,10 @@ export const SignUpForm = ({
       signUpForm.reset();
       toast.success("Sign up successful", {
         icon: <LogIn size={18} />,
-        description: `Welcome ${data.user
-          .firstName!}, please verify your email.`,
+        description: `${data.user
+          .firstName!}, please verify your email. A verification code has been sent to ${
+          data.user.email
+        }.`,
       });
     },
     onError(error) {
@@ -82,10 +78,12 @@ export const SignUpForm = ({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="max-w-lg ld:max-w-xl mx-auto">
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome</CardTitle>
-          <CardDescription>Register your account</CardDescription>
+      <Card className="max-w-lg sm:max-w-lg mx-auto">
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold text-center">
+            Create an account
+          </CardTitle>
+          {/* <CardDescription>Enter your details below</CardDescription> */}
         </CardHeader>
         <CardContent>
           <Form {...signUpForm}>
@@ -208,51 +206,53 @@ export const SignUpForm = ({
                     />
                   </div>
 
-                  <FormField
-                    control={signUpForm.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel htmlFor="password">Password</FormLabel>
-                        <FormControl>
-                          <Input
-                            id="password"
-                            type="password"
-                            placeholder="••••••••"
-                            required
-                            autoComplete="new-password"
-                            {...field}
-                          />
-                        </FormControl>
+                  <div className="flex flex-col gap-6 sm:flex-row sm:gap-3">
+                    <FormField
+                      control={signUpForm.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel htmlFor="password">Password</FormLabel>
+                          <FormControl>
+                            <Input
+                              id="password"
+                              type="password"
+                              placeholder="••••••••"
+                              required
+                              autoComplete="new-password"
+                              {...field}
+                            />
+                          </FormControl>
 
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={signUpForm.control}
-                    name="confirmPassword"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel htmlFor="confirmPassword">
-                          Confirm Password
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            id="confirmPassword"
-                            type="password"
-                            placeholder="••••••••"
-                            required
-                            autoComplete="new-password"
-                            {...field}
-                          />
-                        </FormControl>
+                    <FormField
+                      control={signUpForm.control}
+                      name="confirmPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel htmlFor="confirmPassword">
+                            Confirm Password
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              id="confirmPassword"
+                              type="password"
+                              placeholder="••••••••"
+                              required
+                              autoComplete="new-password"
+                              {...field}
+                            />
+                          </FormControl>
 
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   <Button
                     loading={signUpMutation.isPending}

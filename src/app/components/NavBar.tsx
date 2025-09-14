@@ -11,6 +11,7 @@ import { Link } from "react-router";
 
 import logo from "@/assets/blue-logo.png";
 import { useAuthStore } from "@/auth/store/useAuthStore";
+import { toast } from "sonner";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -26,6 +27,15 @@ export const Navbar = () => {
       { name: "Sign In", href: "/auth/signin" },
       { name: "Sign Up", href: "/auth/signup", isPrimary: true },
     ],
+  };
+
+  const handleLogout = () => {
+    logout();
+    toast.success("Logged out successfully", {
+      description: "You have been logged out.",
+      duration: 4000,
+    });
+    setIsMenuOpen(false);
   };
 
   return (
@@ -73,9 +83,7 @@ export const Navbar = () => {
                 </Button>
 
                 <Button variant="outline" asChild>
-                  <Link to={"/auth/signup"}>
-                    Sign Up <LogOut />
-                  </Link>
+                  <Link to={"/auth/signup"}>Sign Up</Link>
                 </Button>
               </>
             ) : (
@@ -92,7 +100,7 @@ export const Navbar = () => {
                   </Button>
                 )}
 
-                <Button variant={"destructive"} onClick={logout}>
+                <Button variant={"destructive"} onClick={handleLogout}>
                   Sign Out <LogOut />
                 </Button>
               </>
@@ -157,26 +165,64 @@ export const Navbar = () => {
               <div className="py-4 border-t border-gray-600">
                 <div className="space-y-2">
                   {/* Auth Links */}
-                  {links.authNavLinks.map((link) => (
-                    <Button
-                      key={link.name}
-                      variant="ghost"
-                      size="sm"
-                      className={`w-full justify-start text-white ${
-                        link.isPrimary
-                          ? "bg-primary text-white hover:bg-primary/90"
-                          : ""
-                      }`}
-                      asChild
-                    >
-                      <Link
-                        to={link.href}
-                        className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors"
+                  {authStatus === "unauthenticated" ? (
+                    <div className="flex flex-col gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        asChild
+                        className="flex justify-start"
                       >
-                        {link.name}
-                      </Link>
-                    </Button>
-                  ))}
+                        <Link
+                          to="/auth/signin"
+                          className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors "
+                        >
+                          Sign In
+                        </Link>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        asChild
+                        className="justify-start"
+                      >
+                        <Link
+                          to="/auth/signup"
+                          className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors"
+                        >
+                          Sign Up
+                        </Link>
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      {isAdmin() && (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          asChild
+                          className="justify-start "
+                        >
+                          <Link
+                            to="/admin"
+                            className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors"
+                          >
+                            <LayoutDashboard /> Dashboard
+                          </Link>
+                        </Button>
+                      )}
+
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleLogout}
+                        className="justify-start"
+                      >
+                        <LogOut />
+                        Sign Out
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

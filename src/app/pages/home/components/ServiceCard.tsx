@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Service } from "@/interfaces/service.response";
+import { Service } from "@/interfaces/service.interface";
 
 interface ServiceCardProps {
   service: Service;

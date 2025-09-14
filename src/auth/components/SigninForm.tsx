@@ -21,23 +21,29 @@ import { CircleX, LogIn } from "lucide-react";
 import { SignInRequest, signInSchema } from "../schemas";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
+import { ServerException } from "@/interfaces/server-exception.response";
+import { resendCode } from "../actions/resend-code.action";
 
 export const SignInForm = ({
   className,
   ...props
 }: React.ComponentProps<"div">) => {
-  const { signIn } = useAuthStore();
+  const { signIn, tempEmail } = useAuthStore();
   const navigate = useNavigate();
 
   const signInForm = useForm<SignInRequest>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      email: "",
+      email: tempEmail || "",
       password: "",
     },
   });
 
-  const signInMutation = useMutation<AuthResponse, AxiosError, SignInRequest>({
+  const signInMutation = useMutation<
+    AuthResponse,
+    AxiosError<ServerException>,
+    SignInRequest
+  >({
     mutationFn: signIn,
     onSuccess: async (data) => {
       signInForm.reset();
@@ -47,20 +53,32 @@ export const SignInForm = ({
         position: "top-center",
       });
     },
-    onError() {
+    async onError(error, variables) {
+      if (error.message === "Network Error") {
+        toast.error("Network Error", {
+          description: "Please check your internet connection and try again.",
+        });
+        return;
+      }
+
+      if (error.response?.data.error === "Email Not Verified") {
+        await resendCode(variables.email);
+        navigate("/auth/verify-email");
+      }
+
       toast.error("Login failed", {
-        description: "Incorrect email or password. Please try again.",
+        description:
+          error.response?.data.message ||
+          "Incorrect email or password. Please try again.",
         dismissible: false,
-        position: "top-center",
         icon: <CircleX size={18} />,
+        duration: 5000,
       });
     },
   });
 
   const handleSignIn = async (values: SignInRequest) => {
     await signInMutation.mutateAsync(values);
-    navigate("/");
-    return;
   };
 
   return (

@@ -3,8 +3,11 @@ import {
   Bot,
   Briefcase,
   Calendar,
+  CalendarIcon,
   LayoutDashboard,
+  Moon,
   Settings2,
+  Users2Icon,
 } from "lucide-react";
 
 import {
@@ -12,6 +15,7 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
@@ -20,40 +24,59 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { Link, useLocation } from "react-router";
-import { TeamSwitcher } from "./team-switcher";
 import { NavUser } from "./nav-user";
 import { useAuthStore } from "@/auth/store/useAuthStore";
+import { Switch } from "@/components/ui/switch";
+import { useTheme } from "@/components/theme-provider";
+import { Label } from "@/components/ui/label";
 
 const navItems = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
   { title: "Users", url: "/admin/users", icon: Bot },
+  { title: "Schedules", url: "/admin/schedules", icon: CalendarIcon },
+  { title: "Staff", url: "/admin/staff", icon: Users2Icon },
   { title: "Services", url: "/admin/services", icon: Briefcase },
   { title: "Appointments", url: "/admin/appointments", icon: Calendar },
   { title: "Settings", url: "/admin/settings", icon: Settings2 },
 ];
 
-const data = {
-  teams: [
-    {
-      name: "Ascencio Tax Inc",
-      logo: Briefcase,
-      plan: "Enterprise",
-    },
-  ],
-};
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { pathname } = useLocation();
   const { user } = useAuthStore();
+  const { setTheme, theme } = useTheme();
 
   const isActiveRoute = (route: string) => {
     return pathname === route;
   };
 
+  const handleTheme = (checked: boolean) => {
+    if (!checked) setTheme("light");
+    if (checked) setTheme("dark");
+  };
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              className="data-[slot=sidebar-menu-button]:!p-1.5"
+            >
+              <Link to="/" className="p-1">
+                <img
+                  src="/logo.png"
+                  alt="Logo"
+                  className="rounded-md w-6 h-6"
+                />
+
+                <span className="text-base font-semibold">
+                  Ascencio Tax Inc.
+                </span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -73,6 +96,28 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               </SidebarMenuItem>
             </SidebarMenu>
           ))}
+        </SidebarGroup>
+
+        <SidebarGroup {...props} className="mt-auto">
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <div className="flex items-center justify-between space-x-2">
+                    <div className="flex items-center gap-2">
+                      <Moon size={16} />
+                      <Label htmlFor="dark-mode">Dark mode</Label>
+                    </div>
+                    <Switch
+                      id="dark-mode"
+                      checked={theme === "dark"}
+                      onCheckedChange={handleTheme}
+                    />
+                  </div>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
