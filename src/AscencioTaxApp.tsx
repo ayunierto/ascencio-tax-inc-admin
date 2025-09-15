@@ -13,6 +13,7 @@ import { appRouter } from "./app.router";
 import { ThemeProvider } from "./components/theme-provider";
 import { useAuthStore } from "./auth/store/useAuthStore";
 import { Loader } from "./components/Loader";
+import { AnimatePresence } from "framer-motion";
 
 const queryClient = new QueryClient();
 
@@ -37,9 +38,11 @@ export const AscencioTaxApp = () => {
       <ThemeProvider defaultTheme="light" storageKey="theme">
         <TooltipProvider>
           <CheckAuthProvider>
-            <RouterProvider router={appRouter} />
+            <AnimatePresence mode="wait">
+              <RouterProvider router={appRouter} />
+            </AnimatePresence>
           </CheckAuthProvider>
-          <Toaster position="top-center" richColors />
+          <Toaster position="top-right" richColors />
         </TooltipProvider>
         <ReactQueryDevtools />
       </ThemeProvider>

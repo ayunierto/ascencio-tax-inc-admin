@@ -28,18 +28,9 @@ export const appRouter = createBrowserRouter([
     path: "/",
     element: <AppLayout />,
     children: [
-      {
-        index: true,
-        element: <HomePage />,
-      },
-      {
-        path: "appointments",
-        element: <AppointmentsPage />,
-      },
-      {
-        path: "appointment/:id",
-        element: <AppointmentPage />,
-      },
+      { index: true, element: <HomePage /> },
+      { path: "appointments", element: <AppointmentsPage /> },
+      { path: "appointment/:id", element: <AppointmentPage /> },
     ],
   },
   // Auth routes
@@ -51,30 +42,12 @@ export const appRouter = createBrowserRouter([
       </UnAuthenticatedRoute>
     ),
     children: [
-      {
-        index: true,
-        element: <Navigate to={"/auth/signin"} />,
-      },
-      {
-        path: "signin",
-        element: <SignInPage />,
-      },
-      {
-        path: "signup",
-        element: <SignUpPage />,
-      },
-      {
-        path: "verify-email",
-        element: <VerifyEmailPage />,
-      },
-      {
-        path: "forgot-password",
-        element: <ForgotPasswordPage />,
-      },
-      {
-        path: "password-reset",
-        element: <ResetPasswordPage />,
-      },
+      { index: true, element: <Navigate to={"/auth/signin"} /> },
+      { path: "signin", element: <SignInPage /> },
+      { path: "signup", element: <SignUpPage /> },
+      { path: "verify-email", element: <VerifyEmailPage /> },
+      { path: "forgot-password", element: <ForgotPasswordPage /> },
+      { path: "password-reset", element: <ResetPasswordPage /> },
     ],
   },
   // Admin routes
@@ -86,34 +59,13 @@ export const appRouter = createBrowserRouter([
       </AdminRoute>
     ),
     children: [
-      {
-        index: true,
-        element: <DashboardPage />,
-      },
-      {
-        path: "schedules",
-        element: <SchedulesPage />,
-      },
-      {
-        path: "schedules/:id",
-        element: <SchedulePage />,
-      },
-      {
-        path: "staff",
-        element: <AdminAllStaffsPage />,
-      },
-      {
-        path: "staff/:id",
-        element: <AdminStaffPage />,
-      },
-      {
-        path: "services",
-        element: <AdminServicesPage />,
-      },
-      {
-        path: "services/:id",
-        element: <AdminServicePage />,
-      },
+      { index: true, element: <DashboardPage /> },
+      { path: "schedules", element: <SchedulesPage /> },
+      { path: "schedules/:id", element: <SchedulePage /> },
+      { path: "staff", element: <AdminAllStaffsPage /> },
+      { path: "staff/:id", element: <AdminStaffPage /> },
+      { path: "services", element: <AdminServicesPage /> },
+      { path: "services/:id", element: <AdminServicePage /> },
     ],
   },
   {

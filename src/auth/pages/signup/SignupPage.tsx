@@ -1,5 +1,10 @@
 import { SignUpForm } from "@/auth/components";
+import { AnimatedPage } from "@/components/AnimatedPage";
 
 export const SignUpPage = () => {
-  return <SignUpForm />;
+  return (
+    <AnimatedPage>
+      <SignUpForm />
+    </AnimatedPage>
+  );
 };

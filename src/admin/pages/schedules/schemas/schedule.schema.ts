@@ -3,18 +3,18 @@ import z from "zod";
 export const scheduleSchema = z
   .object({
     id: z.string(),
-    weekday: z.string(),
+    weekday: z.number({ required_error: "Weekday is required" }),
     startTime: z
-      .string()
+      .string({ required_error: "The start time field is required" })
       .regex(
         /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/,
-        "The start time field is required"
+        "Invalid start time format, use HH:MM"
       ),
     endTime: z
-      .string()
+      .string({ required_error: "The end time field is required" })
       .regex(
         /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/,
-        "The end time field is required"
+        "Invalid end time format, use HH:MM"
       ),
   })
   .refine(

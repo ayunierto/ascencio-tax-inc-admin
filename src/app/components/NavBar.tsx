@@ -45,9 +45,9 @@ export const Navbar = () => {
           {/* Logo */}
           <div className="flex items-center gap-2">
             <img src={logo} alt="logo" className="h-10 w-10 rounded-2xl" />
-            <span className="text-xl font-bold text-white">
+            {/* <span className="text-xl font-bold text-white">
               Ascencio Tax Inc.
-            </span>
+            </span> */}
           </div>
 
           {/* Desktop Navigation */}
@@ -82,7 +82,7 @@ export const Navbar = () => {
                   <Link to="/auth/signin">Sign In</Link>
                 </Button>
 
-                <Button variant="outline" asChild>
+                <Button asChild>
                   <Link to={"/auth/signup"}>Sign Up</Link>
                 </Button>
               </>
@@ -175,17 +175,12 @@ export const Navbar = () => {
                       >
                         <Link
                           to="/auth/signin"
-                          className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors "
+                          className="block px-3 py-2 text-base font-medium hover:text-primary hover:bg-accent rounded-md transition-colors text-white"
                         >
                           Sign In
                         </Link>
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        asChild
-                        className="justify-start"
-                      >
+                      <Button size="sm" asChild className="justify-start">
                         <Link
                           to="/auth/signup"
                           className="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors"
@@ -216,7 +211,7 @@ export const Navbar = () => {
                         variant="ghost"
                         size="sm"
                         onClick={handleLogout}
-                        className="justify-start"
+                        className="justify-start text-white"
                       >
                         <LogOut />
                         Sign Out

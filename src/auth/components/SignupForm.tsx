@@ -259,7 +259,6 @@ export const SignUpForm = ({
                     disabled={signUpMutation.isPending}
                     type="submit"
                     className="w-full"
-                    variant={"outline"}
                   >
                     Register
                   </Button>

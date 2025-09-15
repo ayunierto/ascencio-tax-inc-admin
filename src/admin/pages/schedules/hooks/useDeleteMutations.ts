@@ -1,21 +1,13 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getScheduleByIdAction } from "../actions/get-schedule-by-id.action";
 import { createUpdateScheduleAction } from "../actions/create-update-schedule.action";
 import { ScheduleResponse } from "../interfaces/schedules.response";
 import { AxiosError } from "axios";
 import { ServerException } from "@/interfaces/server-exception.response";
 import { Schedule } from "../schemas/schedule.schema";
+import { deleteScheduleAction } from "../actions/delete-schedule.action";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export const useSchedule = (id: string) => {
+export const useMutations = () => {
   const queryClient = useQueryClient();
-
-  const query = useQuery({
-    queryKey: ["schedule", id],
-    queryFn: () => getScheduleByIdAction(id),
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    refetchOnWindowFocus: false,
-    retry: false,
-  });
 
   const mutation = useMutation<
     ScheduleResponse,
@@ -46,8 +38,22 @@ export const useSchedule = (id: string) => {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: deleteScheduleAction,
+    onSuccess: (_data, variables) => {
+      const id = variables;
+      // Update list
+      queryClient.setQueryData(["schedules"], (oldList: ScheduleResponse[]) => {
+        if (!oldList) return [];
+        return oldList.filter((s) => s.id !== id);
+      });
+      // Remove individual schedule query
+      queryClient.removeQueries({ queryKey: ["schedule", id] });
+    },
+  });
+
   return {
-    ...query,
     mutation,
+    deleteMutation,
   };
 };

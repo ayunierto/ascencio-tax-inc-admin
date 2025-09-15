@@ -1,5 +1,10 @@
 import { SignInForm } from "@/auth/components";
+import { AnimatedPage } from "@/components/AnimatedPage";
 
 export const SignInPage = () => {
-  return <SignInForm />;
+  return (
+    <AnimatedPage>
+      <SignInForm />
+    </AnimatedPage>
+  );
 };

@@ -17,12 +17,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "../store/useAuthStore";
 import { AuthResponse } from "../interfaces";
-import { CircleX, LogIn } from "lucide-react";
+import { AlertCircleIcon, CircleX, LogIn } from "lucide-react";
 import { SignInRequest, signInSchema } from "../schemas";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { ServerException } from "@/interfaces/server-exception.response";
 import { resendCode } from "../actions/resend-code.action";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { DateTime } from "luxon";
 
 export const SignInForm = ({
   className,
@@ -31,7 +33,7 @@ export const SignInForm = ({
   const { signIn, tempEmail } = useAuthStore();
   const navigate = useNavigate();
 
-  const signInForm = useForm<SignInRequest>({
+  const form = useForm<SignInRequest>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
       email: tempEmail || "",
@@ -39,19 +41,27 @@ export const SignInForm = ({
     },
   });
 
-  const signInMutation = useMutation<
+  const mutation = useMutation<
     AuthResponse,
     AxiosError<ServerException>,
     SignInRequest
   >({
     mutationFn: signIn,
     onSuccess: async (data) => {
-      signInForm.reset();
+      form.reset();
       toast.success("Login successful", {
         icon: <LogIn size={18} />,
-        description: `Welcome ${data.user.firstName!}`,
-        position: "top-center",
+        description: `Last login: ${DateTime.fromISO(
+          data.user.lastLoginAt
+        ).toLocaleString(DateTime.DATETIME_MED)}`,
+        duration: 8000,
+        dismissible: true,
       });
+      if (data.user.roles.includes("admin")) {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     },
     async onError(error, variables) {
       if (error.message === "Network Error") {
@@ -66,6 +76,12 @@ export const SignInForm = ({
         navigate("/auth/verify-email");
       }
 
+      form.setError("root", {
+        message:
+          error.response?.data.message ||
+          "Incorrect email or password. Please try again.",
+      });
+
       toast.error("Login failed", {
         description:
           error.response?.data.message ||
@@ -77,8 +93,8 @@ export const SignInForm = ({
     },
   });
 
-  const handleSignIn = async (values: SignInRequest) => {
-    await signInMutation.mutateAsync(values);
+  const onSubmit = async (values: SignInRequest) => {
+    await mutation.mutateAsync(values);
   };
 
   return (
@@ -93,12 +109,28 @@ export const SignInForm = ({
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Sign In</CardTitle>
         </CardHeader>
-        <CardContent>
-          <Form {...signInForm}>
-            <form onSubmit={signInForm.handleSubmit(handleSignIn)}>
+
+        <CardContent className="flex flex-col gap-4">
+          {form.formState.errors.root && (
+            <Alert variant="destructive">
+              <AlertCircleIcon />
+              <AlertTitle>Sign in failed</AlertTitle>
+              <AlertDescription>
+                <p className="text-xs">
+                  Please verify your information and try again.
+                </p>
+                <ul className="list-inside list-disc text-xs">
+                  <li>{form.formState.errors.root.message}</li>
+                </ul>
+              </AlertDescription>
+            </Alert>
+          )}
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="grid gap-6">
                 <FormField
-                  control={signInForm.control}
+                  control={form.control}
                   name="email"
                   render={({ field }) => (
                     <FormItem>
@@ -120,7 +152,7 @@ export const SignInForm = ({
                 />
 
                 <FormField
-                  control={signInForm.control}
+                  control={form.control}
                   name="password"
                   render={({ field }) => (
                     <FormItem>
@@ -143,7 +175,6 @@ export const SignInForm = ({
                           {...field}
                         />
                       </FormControl>
-
                       <FormMessage />
                     </FormItem>
                   )}
@@ -152,9 +183,8 @@ export const SignInForm = ({
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={signInMutation.isPending}
-                  variant="outline"
-                  loading={signInMutation.isPending}
+                  disabled={mutation.isPending}
+                  loading={mutation.isPending}
                 >
                   Login
                 </Button>

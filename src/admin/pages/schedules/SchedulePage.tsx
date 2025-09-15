@@ -1,10 +1,16 @@
+import { useEffect } from "react";
 import { AdminHeader } from "@/admin/components/AdminHeader";
 import { Button } from "@/components/ui/button";
-import { SaveIcon } from "lucide-react";
-import { useParams } from "react-router";
+import { ArrowLeft, SaveIcon } from "lucide-react";
+import { Navigate, useNavigate, useParams } from "react-router";
 import { useSchedule } from "./hooks/useSchedule";
 import { Loader } from "@/components/Loader";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Schedule, scheduleSchema } from "./schemas/schedule.schema";
@@ -27,6 +33,16 @@ import {
 } from "@/components/ui/select";
 import EmptyContent from "@/components/EmptyContent";
 
+const weekdays = [
+  { value: 1, label: "Monday" },
+  { value: 2, label: "Tuesday" },
+  { value: 3, label: "Wednesday" },
+  { value: 4, label: "Thursday" },
+  { value: 5, label: "Friday" },
+  { value: 6, label: "Saturday" },
+  { value: 7, label: "Sunday" },
+];
+
 export const SchedulePage = () => {
   const { id } = useParams();
   const {
@@ -34,57 +50,87 @@ export const SchedulePage = () => {
     isLoading,
     isError,
     error,
+    mutation,
   } = useSchedule(id || "new");
-  console.log({ schedule });
-
+  const navigate = useNavigate();
   const form = useForm<Schedule>({
     resolver: zodResolver(scheduleSchema),
     defaultValues: {
-      id: id || "new",
-      startTime: "",
-      endTime: "",
-      weekday: schedule?.weekday.toString() || undefined,
+      id: undefined,
+      startTime: undefined,
+      endTime: undefined,
+      weekday: undefined,
     },
   });
 
-  const onSubmit = (data: Schedule) => {
-    console.log(data);
-    toast("You submitted the following values", {
-      description: (
-        <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
+  // Update form values when schedule changes
+  useEffect(() => {
+    if (schedule) {
+      form.reset({
+        id: schedule.id,
+        startTime: schedule.startTime,
+        endTime: schedule.endTime,
+        weekday: schedule.weekday === 0 ? undefined : schedule.weekday,
+      });
+    }
+  }, [schedule, form]);
+
+  const onSubmit = async (scheduleLike: Partial<Schedule>) => {
+    await mutation.mutateAsync(scheduleLike, {
+      onSuccess(schedule, variables) {
+        toast.success(
+          `Schedule ${
+            variables.id === "new" ? "created" : "updated"
+          } successfully`
+        );
+        form.reset(schedule);
+        navigate(`/admin/schedules/${schedule.id}`);
+      },
+      onError: (error) => {
+        toast.error(error.message || "An unexpected error occurred. ");
+      },
     });
   };
 
-  if (isLoading) {
-    return <Loader />;
-  }
-
+  // Handle states
   if (isError) {
-    return <EmptyContent title="Cannot " description={error.message} />;
+    return (
+      <EmptyContent
+        title="An unexpected error occurred"
+        description={error.message}
+      />
+    );
   }
+  if (isLoading) return <Loader />;
+  if (!schedule) return <Navigate to={"/admin/schedules"} />;
 
   return (
     <div>
       <AdminHeader
-        title="Schedules"
-        // actions={
-        //   <Button onClick={form.handleSubmit(onSubmit)}>
-        //     <SaveIcon /> {id === "new" ? "Save" : "Update"}
-        //   </Button>
-        // }
+        backButton={{
+          icon: ArrowLeft,
+          onClick: () => navigate("/admin/schedules"),
+        }}
+        title={id === "new" ? "Add Schedule" : "Edit Schedule"}
+        actions={
+          <Button
+            onClick={form.handleSubmit(onSubmit)}
+            loading={mutation.isPending}
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? "" : <SaveIcon />}
+          </Button>
+        }
       />
 
       <div className="p-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Add Schedule</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="">
+            <Card>
+              <CardHeader>
+                {/* <CardTitle>Add Schedule</CardTitle> */}
+              </CardHeader>
+              <CardContent>
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3 space-y-4">
                   <FormField
                     control={form.control}
@@ -93,8 +139,12 @@ export const SchedulePage = () => {
                       <FormItem>
                         <FormLabel>Weekday</FormLabel>
                         <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          onValueChange={(value) => field.onChange(+value)}
+                          defaultValue={
+                            schedule.weekday === 0
+                              ? undefined
+                              : schedule.weekday?.toString()
+                          }
                         >
                           <FormControl>
                             <SelectTrigger className="w-full">
@@ -102,13 +152,14 @@ export const SchedulePage = () => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="1">Sunday</SelectItem>
-                            <SelectItem value="2">Monday</SelectItem>
-                            <SelectItem value="3">Tuesday</SelectItem>
-                            <SelectItem value="4">Wednesday </SelectItem>
-                            <SelectItem value="5">Thursday </SelectItem>
-                            <SelectItem value="6">Friday </SelectItem>
-                            <SelectItem value="7">Saturday</SelectItem>
+                            {weekdays.map((day) => (
+                              <SelectItem
+                                key={day.value}
+                                value={day.value.toString()}
+                              >
+                                {day.label}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -127,6 +178,8 @@ export const SchedulePage = () => {
                             type="time"
                             className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none w-full"
                             {...field}
+                            value={field.value || ""}
+                            onChange={(e) => field.onChange(e.target.value)}
                           />
                         </FormControl>
                         <FormMessage />
@@ -145,6 +198,8 @@ export const SchedulePage = () => {
                             type="time"
                             className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none w-full"
                             {...field}
+                            value={field.value || ""}
+                            onChange={(e) => field.onChange(e.target.value)}
                           />
                         </FormControl>
                         <FormMessage />
@@ -152,17 +207,19 @@ export const SchedulePage = () => {
                     )}
                   />
                 </div>
-
-                <div className="flex justify-end">
-                  <Button type="submit">
-                    <SaveIcon />
-                    Save
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+              </CardContent>
+              <CardFooter className="justify-end">
+                <Button
+                  type="submit"
+                  disabled={mutation.isPending}
+                  loading={mutation.isPending}
+                >
+                  <SaveIcon /> {id === "new" ? "Save" : "Update"}
+                </Button>
+              </CardFooter>
+            </Card>
+          </form>
+        </Form>
       </div>
     </div>
   );
