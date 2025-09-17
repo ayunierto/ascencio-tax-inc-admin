@@ -131,7 +131,7 @@ export const SchedulePage = () => {
                 {/* <CardTitle>Add Schedule</CardTitle> */}
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3 space-y-4">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
                   <FormField
                     control={form.control}
                     name="weekday"
