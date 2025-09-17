@@ -2,10 +2,10 @@ import { api } from "@/api/api";
 import { ScheduleResponse } from "../interfaces/schedules.response";
 
 export const getScheduleByIdAction = async (
-  scheduleId: string
+  id: string
 ): Promise<ScheduleResponse> => {
   try {
-    if (scheduleId === "new") {
+    if (id === "new") {
       return {
         id: "new",
         weekday: 0,
@@ -15,9 +15,7 @@ export const getScheduleByIdAction = async (
         updatedAt: "",
       };
     }
-    const { data } = await api.get<ScheduleResponse>(
-      `/schedules/${scheduleId}`
-    );
+    const { data } = await api.get<ScheduleResponse>(`/schedules/${id}`);
     return data;
   } catch (error) {
     throw error;

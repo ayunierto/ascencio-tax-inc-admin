@@ -1,17 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import { getSchedulesAction } from "../actions/get-schedules.action";
-import { ScheduleResponse } from "../interfaces/schedules.response";
+import { getStaffAction } from "../actions/get-staff.action";
+import { StaffResponse } from "../interfaces/staff.response";
 import { AxiosError } from "axios";
 import { ServerException } from "@/interfaces/server-exception.response";
 
-export const useSchedules = () => {
+export const useAllStaff = () => {
   return useQuery<
-    ScheduleResponse[],
+    StaffResponse[],
     AxiosError<ServerException>,
-    ScheduleResponse[]
+    StaffResponse[]
   >({
-    queryKey: ["schedules"],
-    queryFn: () => getSchedulesAction(),
+    queryKey: ["staff"],
+    queryFn: () => getStaffAction(),
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false,
     retry: false,

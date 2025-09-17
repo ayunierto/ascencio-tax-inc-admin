@@ -1,53 +1,12 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { getScheduleByIdAction } from "../actions/get-schedule-by-id.action";
-import { createUpdateScheduleAction } from "../actions/create-update-schedule.action";
-import { ScheduleResponse } from "../interfaces/schedules.response";
-import { AxiosError } from "axios";
-import { ServerException } from "@/interfaces/server-exception.response";
-import { Schedule } from "../schemas/schedule.schema";
 
 export const useSchedule = (id: string) => {
-  const queryClient = useQueryClient();
-
-  const query = useQuery({
+  return useQuery({
     queryKey: ["schedule", id],
     queryFn: () => getScheduleByIdAction(id),
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false,
     retry: false,
   });
-
-  const mutation = useMutation<
-    ScheduleResponse,
-    AxiosError<ServerException>,
-    Partial<Schedule>
-  >({
-    mutationFn: createUpdateScheduleAction,
-    onSuccess: (updatedSchedule) => {
-      // Update data
-      queryClient.setQueryData(
-        ["schedule", updatedSchedule.id],
-        updatedSchedule
-      );
-
-      // Update list
-      queryClient.setQueryData(["schedules"], (oldList: ScheduleResponse[]) => {
-        // If no old list, return a new list with the updated schedule
-        if (!oldList) return [updatedSchedule];
-        // If the schedule is not in the list, add it
-        if (!oldList.find((s) => s.id === updatedSchedule.id)) {
-          return [...oldList, updatedSchedule];
-        }
-        // Otherwise, update the existing schedule
-        return oldList.map((s) =>
-          s.id === updatedSchedule.id ? updatedSchedule : s
-        );
-      });
-    },
-  });
-
-  return {
-    ...query,
-    mutation,
-  };
 };

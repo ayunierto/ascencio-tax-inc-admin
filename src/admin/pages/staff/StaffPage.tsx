@@ -1,6 +1,5 @@
 import { Link } from "react-router";
 import { EditIcon, PlusCircleIcon, Trash2Icon } from "lucide-react";
-import { DateTime, WeekdayNumbers } from "luxon";
 import { toast } from "sonner";
 import { AdminHeader } from "@/admin/components/AdminHeader";
 import { Button } from "@/components/ui/button";
@@ -13,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useSchedules } from "./hooks/useSchedules";
+import { useAllStaff } from "./hooks/useAllStaff";
 import { Loader } from "@/components/Loader";
 import { Card, CardContent } from "@/components/ui/card";
 import { useMutations } from "./hooks/useMutations";
@@ -29,9 +28,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 
-export const SchedulesPage = () => {
-  const { data: schedules, isLoading, isError, error } = useSchedules();
+export const StaffPage = () => {
+  const { data: staff, isLoading, isError, error } = useAllStaff();
   const { deleteMutation } = useMutations();
 
   if (isLoading) return <Loader />;
@@ -41,7 +41,7 @@ export const SchedulesPage = () => {
     await deleteMutation.mutateAsync(id, {
       onSuccess: () => {
         // Show a toast notification
-        toast.success("Schedule deleted");
+        toast.success("Staff deleted");
       },
       onError: (error) => {
         toast.error(error.message || "An unexpected error occurred. ");
@@ -52,10 +52,10 @@ export const SchedulesPage = () => {
   return (
     <div>
       <AdminHeader
-        title="Schedules"
+        title="Staff"
         actions={
           <Button asChild>
-            <Link to={"/admin/schedules/new"}>
+            <Link to={"/admin/staff/new"}>
               <PlusCircleIcon />
             </Link>
           </Button>
@@ -66,42 +66,41 @@ export const SchedulesPage = () => {
         <Card>
           <CardContent className="p-0">
             <Table>
-              {!schedules || schedules.length === 0 ? (
+              {!staff || staff.length === 0 ? (
                 <TableCaption>
-                  No schedules found. <br />
-                  <Link to={"/admin/schedules/new"} className="text-blue-500">
-                    Click here to add a new schedule.
+                  No data found. <br />
+                  <Link to={"/admin/staff/new"} className="text-blue-500">
+                    Click here to add a new staff member.
                   </Link>
                 </TableCaption>
               ) : null}
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[100px]">Weekday</TableHead>
-                  <TableHead>Start Time</TableHead>
-                  <TableHead>End Time</TableHead>
+                  <TableHead>First Name</TableHead>
+                  <TableHead>Last Name</TableHead>
+                  <TableHead>State</TableHead>
                   <TableHead className="text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {schedules &&
-                  schedules.map((schedule) => (
-                    <TableRow key={schedule.id}>
+                {staff &&
+                  staff.map((member) => (
+                    <TableRow key={member.id}>
+                      <TableCell>{member.firstName}</TableCell>
+                      <TableCell>{member.lastName}</TableCell>
                       <TableCell>
-                        {DateTime.fromObject({
-                          weekday: schedule.weekday as WeekdayNumbers,
-                        }).toFormat("cccc")}
-                      </TableCell>
-                      <TableCell>
-                        {DateTime.fromISO(schedule.startTime).toFormat(
-                          "hh:mm a"
+                        {member.isActive ? (
+                          <Badge variant="outline" className="bg-green-500/50">
+                            Active
+                          </Badge>
+                        ) : (
+                          <Badge variant="destructive">Inactive</Badge>
                         )}
                       </TableCell>
-                      <TableCell>
-                        {DateTime.fromISO(schedule.endTime).toFormat("hh:mm a")}
-                      </TableCell>
+
                       <TableCell className="flex items-center justify-center gap-1">
                         <Button variant="ghost" asChild size={"sm"}>
-                          <Link to={`/admin/schedules/${schedule.id}`}>
+                          <Link to={`/admin/staff/${member.id}`}>
                             <EditIcon size={16} />
                           </Link>
                         </Button>
@@ -122,13 +121,13 @@ export const SchedulesPage = () => {
                               </AlertDialogTitle>
                               <AlertDialogDescription>
                                 This action cannot be undone. This will
-                                permanently delete the schedule.
+                                permanently delete the staff member.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={() => onDelete(schedule.id)}
+                                onClick={() => onDelete(member.id)}
                               >
                                 Continue
                               </AlertDialogAction>

@@ -7,7 +7,6 @@ import { AdminHeader } from "@/admin/components/AdminHeader";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useStaff } from "@/admin/hooks/useAllStaff";
 import {
   CreateServiceRequest,
   createServiceSchema,
@@ -34,11 +33,12 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { createServiceAction } from "./actions/create-service.action";
+import { useAllStaff } from "../staff/hooks/useAllStaff";
 
 export const AdminServicePage = () => {
   const { id } = useParams();
   const { data: service, isLoading, isError, error } = useService(id || "");
-  const { data: staff } = useStaff();
+  const { data: staff } = useAllStaff();
   const queryClient = useQueryClient();
 
   const form = useForm<CreateServiceRequest>({

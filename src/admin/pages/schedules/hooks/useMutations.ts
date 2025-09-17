@@ -1,10 +1,11 @@
+import { AxiosError } from "axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { createUpdateScheduleAction } from "../actions/create-update-schedule.action";
 import { ScheduleResponse } from "../interfaces/schedules.response";
-import { AxiosError } from "axios";
 import { ServerException } from "@/interfaces/server-exception.response";
 import { Schedule } from "../schemas/schedule.schema";
 import { deleteScheduleAction } from "../actions/delete-schedule.action";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useMutations = () => {
   const queryClient = useQueryClient();
@@ -40,8 +41,7 @@ export const useMutations = () => {
 
   const deleteMutation = useMutation({
     mutationFn: deleteScheduleAction,
-    onSuccess: (_data, variables) => {
-      const id = variables;
+    onSuccess: (_data, id) => {
       // Update list
       queryClient.setQueryData(["schedules"], (oldList: ScheduleResponse[]) => {
         if (!oldList) return [];

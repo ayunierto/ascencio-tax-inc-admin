@@ -1,5 +1,5 @@
 import { getServicesAction } from "@/app/actions/get-services.action";
-import { ServicesResponse } from "@/interfaces/get-all-services.response";
+import { ServicesResponse } from "@/interfaces/services.response";
 import { ServerException } from "@/interfaces/server-exception.response";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";

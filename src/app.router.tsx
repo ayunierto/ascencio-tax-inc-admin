@@ -6,16 +6,14 @@ import { AppointmentPage } from "./app/pages/appointment/AppointmentPage";
 import { AppointmentsPage } from "./app/pages/appointments/AppointmentsPage";
 import { SignInPage } from "./auth/pages/signin/SignInPage";
 import { SignUpPage } from "./auth/pages/signup/SignupPage";
-import AdminServicesPage from "./admin/pages/services/AdminServicesPage";
 import { NotFoundPage } from "./NotFoundPage";
 import { AdminRoute, UnAuthenticatedRoute } from "./components/ProtectedRoutes";
 import { VerifyEmailPage } from "./auth/pages/verify-email/VerifyEmailPage";
 import ForgotPasswordPage from "./auth/pages/forgot-password/ForgotPasswordPage";
 import ResetPasswordPage from "./auth/pages/reset-password/ResetPasswordPage";
 import { DashboardPage } from "./admin/pages/dashboard/DashboardPage";
-import { AdminServicePage } from "./admin/pages/services/AdminServicePage";
-import { AdminStaffPage } from "./admin/pages/staff/AdminStaffPage";
-import { AdminAllStaffsPage } from "./admin/pages/staff/AdminAllStaffPage";
+import { StaffPage } from "./admin/pages/staff/StaffPage";
+import { StaffMemberPage } from "./admin/pages/staff/StaffMemberPage";
 import { SchedulesPage } from "./admin/pages/schedules/SchedulesPage";
 import { SchedulePage } from "./admin/pages/schedules/SchedulePage";
 
@@ -62,10 +60,8 @@ export const appRouter = createBrowserRouter([
       { index: true, element: <DashboardPage /> },
       { path: "schedules", element: <SchedulesPage /> },
       { path: "schedules/:id", element: <SchedulePage /> },
-      { path: "staff", element: <AdminAllStaffsPage /> },
-      { path: "staff/:id", element: <AdminStaffPage /> },
-      { path: "services", element: <AdminServicesPage /> },
-      { path: "services/:id", element: <AdminServicePage /> },
+      { path: "staff", element: <StaffPage /> },
+      { path: "staff/:id", element: <StaffMemberPage /> },
     ],
   },
   {

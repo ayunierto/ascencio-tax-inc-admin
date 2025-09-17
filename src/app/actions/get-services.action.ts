@@ -1,5 +1,5 @@
 import { api } from "@/api/api";
-import { ServicesResponse } from "@/interfaces/get-all-services.response";
+import { ServicesResponse } from "@/interfaces/services.response";
 
 export const getServicesAction = async (): Promise<ServicesResponse> => {
   try {

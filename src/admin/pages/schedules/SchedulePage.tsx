@@ -3,6 +3,7 @@ import { AdminHeader } from "@/admin/components/AdminHeader";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, SaveIcon } from "lucide-react";
 import { Navigate, useNavigate, useParams } from "react-router";
+
 import { useSchedule } from "./hooks/useSchedule";
 import { Loader } from "@/components/Loader";
 import {
@@ -32,6 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import EmptyContent from "@/components/EmptyContent";
+import { useMutations } from "./hooks/useMutations";
 
 const weekdays = [
   { value: 1, label: "Monday" },
@@ -50,8 +52,8 @@ export const SchedulePage = () => {
     isLoading,
     isError,
     error,
-    mutation,
   } = useSchedule(id || "new");
+  const { mutation } = useMutations();
   const navigate = useNavigate();
   const form = useForm<Schedule>({
     resolver: zodResolver(scheduleSchema),
@@ -131,7 +133,7 @@ export const SchedulePage = () => {
                 {/* <CardTitle>Add Schedule</CardTitle> */}
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   <FormField
                     control={form.control}
                     name="weekday"

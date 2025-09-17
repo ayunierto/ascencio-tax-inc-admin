@@ -1,21 +1,22 @@
-import { Staff } from "@/admin/interfaces/staff.interface";
 import { api } from "@/api/api";
+import { StaffResponse } from "../interfaces/staff.response";
 
-export const getStaffByIdAction = async (id: String): Promise<Staff> => {
+export const getStaffByIdAction = async (
+  id: string
+): Promise<StaffResponse> => {
   try {
-    if (!id) throw new Error("Staff ID is required");
-    if (typeof id !== "string") throw new Error("Staff ID must be a string");
     if (id === "new") {
       return {
         id: "new",
         firstName: "",
         lastName: "",
         isActive: true,
-        createdAt: "",
-        updatedAt: "",
+        schedules: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
     }
-    const { data } = await api.get<Staff>(`/staff/${id}`);
+    const { data } = await api.get<StaffResponse>(`/staff/${id}`);
     return data;
   } catch (error) {
     throw error;
