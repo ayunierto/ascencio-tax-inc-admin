@@ -16,7 +16,7 @@ export default function EmptyContent({
 }: EmptyContentProps) {
   return (
     <Card className="text-center shadow-sm border border-dashed max-w-xl mx-auto">
-      <CardContent className="flex flex-col items-center justify-center p-6 space-y-4">
+      <CardContent className="flex flex-col items-center justify-center p-6 space-y-2">
         <div className="text-muted-foreground">{icon}</div>
         <h2 className="text-lg font-semibold">{title}</h2>
         {description && (

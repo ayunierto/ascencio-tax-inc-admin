@@ -16,6 +16,9 @@ import { StaffPage } from "./admin/pages/staff/StaffPage";
 import { StaffMemberPage } from "./admin/pages/staff/StaffMemberPage";
 import { SchedulesPage } from "./admin/pages/schedules/SchedulesPage";
 import { SchedulePage } from "./admin/pages/schedules/SchedulePage";
+import { ServicesPage } from "./admin/pages/services/ServicesPage";
+import { ServicePage } from "./admin/pages/services/ServicePage";
+import { SettingsPage } from "./admin/pages/settings/SettingsPage";
 
 const AuthLayout = lazy(() => import("./auth/layout/AuthLayout"));
 const AdminLayout = lazy(() => import("./admin/layout/AdminLayout"));
@@ -58,10 +61,13 @@ export const appRouter = createBrowserRouter([
     ),
     children: [
       { index: true, element: <DashboardPage /> },
-      { path: "schedules", element: <SchedulesPage /> },
-      { path: "schedules/:id", element: <SchedulePage /> },
       { path: "staff", element: <StaffPage /> },
       { path: "staff/:id", element: <StaffMemberPage /> },
+      { path: "schedules", element: <SchedulesPage /> },
+      { path: "schedules/:id", element: <SchedulePage /> },
+      { path: "services", element: <ServicesPage /> },
+      { path: "services/:id", element: <ServicePage /> },
+      { path: "settings", element: <SettingsPage /> },
     ],
   },
   {

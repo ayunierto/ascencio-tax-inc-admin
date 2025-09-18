@@ -100,8 +100,8 @@ export const Navbar = () => {
                   </Button>
                 )}
 
-                <Button variant={"destructive"} onClick={handleLogout}>
-                  Sign Out <LogOut />
+                <Button variant={"secondary"} onClick={handleLogout}>
+                  <LogOut className="text-secondary-foreground" />
                 </Button>
               </>
             )}

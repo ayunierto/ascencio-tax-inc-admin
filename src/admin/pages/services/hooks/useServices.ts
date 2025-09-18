@@ -1,18 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import { getServiceByIdAction } from "../actions/get-service-by-id.action";
-import { ServiceResponse } from "../interfaces/service.response";
+import { getServicesAction } from "../actions/get-services.action";
+import { ServicesResponse } from "../interfaces/services.response";
 import { AxiosError } from "axios";
 import { ServerException } from "@/interfaces/server-exception.response";
 
-export const useService = (id: string) => {
+export const useServices = () => {
   return useQuery<
-    ServiceResponse,
+    ServicesResponse,
     AxiosError<ServerException>,
-    ServiceResponse,
-    string[]
+    ServicesResponse
   >({
-    queryKey: ["service", id],
-    queryFn: () => getServiceByIdAction(id),
+    queryKey: ["services"],
+    queryFn: () => getServicesAction(),
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false,
     retry: false,

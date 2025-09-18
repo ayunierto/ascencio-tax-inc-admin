@@ -5,7 +5,6 @@ import {
   Calendar,
   CalendarIcon,
   LayoutDashboard,
-  Moon,
   Settings2,
   Users2Icon,
 } from "lucide-react";
@@ -15,7 +14,6 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
@@ -26,9 +24,6 @@ import {
 import { Link, useLocation } from "react-router";
 import { NavUser } from "./nav-user";
 import { useAuthStore } from "@/auth/store/useAuthStore";
-import { Switch } from "@/components/ui/switch";
-import { useTheme } from "@/components/theme-provider";
-import { Label } from "@/components/ui/label";
 
 const navItems = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
@@ -43,15 +38,9 @@ const navItems = [
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { pathname } = useLocation();
   const { user } = useAuthStore();
-  const { setTheme, theme } = useTheme();
 
   const isActiveRoute = (route: string) => {
     return pathname === route;
-  };
-
-  const handleTheme = (checked: boolean) => {
-    if (!checked) setTheme("light");
-    if (checked) setTheme("dark");
   };
 
   return (
@@ -96,28 +85,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               </SidebarMenuItem>
             </SidebarMenu>
           ))}
-        </SidebarGroup>
-
-        <SidebarGroup {...props} className="mt-auto">
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <div className="flex items-center justify-between space-x-2">
-                    <div className="flex items-center gap-2">
-                      <Moon size={16} />
-                      <Label htmlFor="dark-mode">Dark mode</Label>
-                    </div>
-                    <Switch
-                      id="dark-mode"
-                      checked={theme === "dark"}
-                      onCheckedChange={handleTheme}
-                    />
-                  </div>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>

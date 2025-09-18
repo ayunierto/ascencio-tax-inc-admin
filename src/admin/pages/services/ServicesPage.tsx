@@ -5,9 +5,11 @@ import {
   PlusCircle,
   PlusCircleIcon,
   Trash2Icon,
+  VideoIcon,
+  VideoOff,
 } from "lucide-react";
-import { DateTime, WeekdayNumbers } from "luxon";
 import { toast } from "sonner";
+
 import { AdminHeader } from "@/admin/components/AdminHeader";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,11 +20,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useSchedules } from "./hooks/useSchedules";
+import { useServices } from "./hooks/useServices";
 import { Loader } from "@/components/Loader";
 import { Card, CardContent } from "@/components/ui/card";
 import { useMutations } from "./hooks/useMutations";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,10 +35,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 import EmptyContent from "@/components/EmptyContent";
 
-export const SchedulesPage = () => {
-  const { data: schedules, isLoading, isError, error } = useSchedules();
+export const ServicesPage = () => {
+  const { data: services, isLoading, isError, error } = useServices();
   const { deleteMutation } = useMutations();
 
   if (isLoading) return <Loader />;
@@ -46,11 +48,14 @@ export const SchedulesPage = () => {
   const onDelete = async (id: string) => {
     await deleteMutation.mutateAsync(id, {
       onSuccess: () => {
-        // Show a toast notification
-        toast.success("Schedule deleted");
+        toast.success("Service deleted");
       },
       onError: (error) => {
-        toast.error(error.message || "An unexpected error occurred. ");
+        toast.error(
+          error.response?.data?.message ||
+            error.message ||
+            "An unexpected error occurred."
+        );
       },
     });
   };
@@ -58,10 +63,10 @@ export const SchedulesPage = () => {
   return (
     <div>
       <AdminHeader
-        title="Schedules"
+        title="Services"
         actions={
           <Button asChild>
-            <Link to={"/admin/schedules/new"}>
+            <Link to={"/admin/services/new"}>
               <PlusCircleIcon />
             </Link>
           </Button>
@@ -69,15 +74,15 @@ export const SchedulesPage = () => {
       />
 
       <div className="p-4">
-        {!schedules || schedules.length === 0 ? (
+        {!services || services.services.length === 0 ? (
           <EmptyContent
             icon={<InfoIcon size={48} className="text-primary" />}
-            title="No schedules found"
-            description="Please add a schedule."
+            title="No services found"
+            description="Please add a service."
             action={
               <Button asChild>
-                <Link to="/admin/schedules/new">
-                  <PlusCircle /> Add Schedule
+                <Link to="/admin/services/new">
+                  <PlusCircle /> Add Service
                 </Link>
               </Button>
             }
@@ -88,34 +93,60 @@ export const SchedulesPage = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[100px]">Weekday</TableHead>
-                    <TableHead>Start Time</TableHead>
-                    <TableHead>End Time</TableHead>
+                    <TableHead>Image</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Price</TableHead>
+                    <TableHead>Online</TableHead>
+                    <TableHead>State</TableHead>
                     <TableHead className="text-center">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {schedules &&
-                    schedules.map((schedule) => (
-                      <TableRow key={schedule.id}>
+                  {services &&
+                    services.services.map((service) => (
+                      <TableRow key={service.id}>
                         <TableCell>
-                          {DateTime.fromObject({
-                            weekday: schedule.weekday as WeekdayNumbers,
-                          }).toFormat("cccc")}
+                          <img
+                            src={service.image || "https://placehold.co/150"}
+                            alt="service image"
+                            className="h-10 w-10 rounded-md object-cover"
+                          />
                         </TableCell>
+                        <TableCell>{service.name}</TableCell>
+                        <TableCell>{service.duration}</TableCell>
                         <TableCell>
-                          {DateTime.fromISO(schedule.startTime).toFormat(
-                            "hh:mm a"
+                          {service.isAvailableOnline ? (
+                            <Badge
+                              variant="outline"
+                              className="bg-green-500/50"
+                            >
+                              <VideoIcon size={16} className="mr-2" />
+                              Online
+                            </Badge>
+                          ) : (
+                            <Badge variant="destructive">
+                              <VideoOff size={16} className="mr-2" />
+                              Offline
+                            </Badge>
                           )}
                         </TableCell>
+
                         <TableCell>
-                          {DateTime.fromISO(schedule.endTime).toFormat(
-                            "hh:mm a"
+                          {service.isActive ? (
+                            <Badge
+                              variant="outline"
+                              className="bg-green-500/50"
+                            >
+                              Active
+                            </Badge>
+                          ) : (
+                            <Badge variant="destructive">Inactive</Badge>
                           )}
                         </TableCell>
-                        <TableCell className="flex items-center justify-center gap-1">
+
+                        <TableCell className="text-center">
                           <Button variant="ghost" asChild size={"sm"}>
-                            <Link to={`/admin/schedules/${schedule.id}`}>
+                            <Link to={`/admin/services/${service.id}`}>
                               <EditIcon size={16} />
                             </Link>
                           </Button>
@@ -136,13 +167,13 @@ export const SchedulesPage = () => {
                                 </AlertDialogTitle>
                                 <AlertDialogDescription>
                                   This action cannot be undone. This will
-                                  permanently delete the schedule.
+                                  permanently delete the service.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction
-                                  onClick={() => onDelete(schedule.id)}
+                                  onClick={() => onDelete(service.id)}
                                 >
                                   Continue
                                 </AlertDialogAction>

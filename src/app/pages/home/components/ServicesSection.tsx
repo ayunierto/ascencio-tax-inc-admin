@@ -1,12 +1,12 @@
+import { useServices } from "@/admin/pages/services/hooks/useServices";
 import { ServiceCard } from "@/app/pages/home/components/ServiceCard";
 import EmptyContent from "@/components/EmptyContent";
 import { Loader } from "@/components/Loader";
-import { useServices } from "@/hooks/useServices";
 import { Info } from "lucide-react";
 import { toast } from "sonner";
 
 export const ServicesSection = () => {
-  const { data, error, isError, isPending } = useServices();
+  const { data: services, error, isError, isPending } = useServices();
 
   if (isPending) return <Loader />;
 
@@ -30,7 +30,7 @@ export const ServicesSection = () => {
     );
   }
 
-  if (!data || data.services.length === 0) {
+  if (!services || services.services.length === 0) {
     return (
       <EmptyContent
         title="No services available"
@@ -48,11 +48,11 @@ export const ServicesSection = () => {
         </div>
 
         {/* Services list */}
-        <div className="py-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 overflow-x-auto flex-nowrap px-2 sm:px-4 ">
-          {!data || data.services.length === 0 ? (
+        <div className="py-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-4 overflow-x-auto flex-nowrap px-2 sm:px-4 ">
+          {!services || services.services.length === 0 ? (
             <div className="text-center">No services available.</div>
           ) : (
-            data.services.map((service) => (
+            services.services.map((service) => (
               <ServiceCard key={service.id} service={service} />
             ))
           )}

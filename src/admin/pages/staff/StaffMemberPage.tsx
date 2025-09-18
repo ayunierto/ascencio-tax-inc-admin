@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, Navigate, useNavigate, useParams } from "react-router";
 import { ArrowLeft, SaveIcon } from "lucide-react";
+import { DateTime, WeekdayNumbers } from "luxon";
 
 import { AdminHeader } from "@/admin/components/AdminHeader";
 import { Button } from "@/components/ui/button";
@@ -37,7 +38,6 @@ import {
   MultiSelectValue,
 } from "@/components/ui/multi-select";
 import { useSchedules } from "../schedules/hooks/useSchedules";
-import { DateTime, WeekdayNumbers } from "luxon";
 
 export const StaffMemberPage = () => {
   const { id } = useParams();

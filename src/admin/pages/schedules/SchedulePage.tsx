@@ -3,6 +3,9 @@ import { AdminHeader } from "@/admin/components/AdminHeader";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, SaveIcon } from "lucide-react";
 import { Navigate, useNavigate, useParams } from "react-router";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 
 import { useSchedule } from "./hooks/useSchedule";
 import { Loader } from "@/components/Loader";
@@ -12,8 +15,6 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Schedule, scheduleSchema } from "./schemas/schedule.schema";
 import {
   Form,
@@ -24,7 +25,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
 import {
   Select,
   SelectContent,
@@ -113,7 +113,7 @@ export const SchedulePage = () => {
           icon: ArrowLeft,
           onClick: () => navigate("/admin/schedules"),
         }}
-        title={id === "new" ? "Add Schedule" : "Edit Schedule"}
+        title={id === "new" ? "Add" : "Edit"}
         actions={
           <Button
             onClick={form.handleSubmit(onSubmit)}

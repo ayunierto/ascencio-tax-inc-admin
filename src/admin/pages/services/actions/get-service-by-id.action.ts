@@ -1,25 +1,29 @@
 import { api } from "@/api/api";
-import { Service } from "@/interfaces/service.interface";
+import { ServiceResponse } from "../interfaces/service.response";
 
-export const GetServiceByIdAction = async (id: string): Promise<Service> => {
-  if (!id) throw new Error("Service ID is required");
+export const getServiceByIdAction = async (
+  id: string
+): Promise<ServiceResponse> => {
+  try {
+    if (id === "new") {
+      return {
+        id: "new",
+        name: "",
+        duration: 0,
+        price: 0,
+        address: "",
+        isAvailableOnline: false,
 
-  if (id === "new") {
-    return {
-      id: "new",
-      name: "",
-      description: "",
-      duration: 0,
-      price: 0,
-      isActive: true,
-      isAvailableOnline: false,
-      image: undefined,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      address: "",
-    };
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        description: "",
+        staff: [],
+      };
+    }
+    const { data } = await api.get<ServiceResponse>(`/services/${id}`);
+    return data;
+  } catch (error) {
+    throw error;
   }
-
-  const { data } = await api.get<Service>(`/services/${id}`);
-  return data;
 };

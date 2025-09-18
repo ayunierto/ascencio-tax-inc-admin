@@ -65,7 +65,7 @@ function Button({
     >
       {loading ? (
         <>
-          <Loader2 className="animate-spin size-4" /> {props.children}
+          <Loader2 className="animate-spin size-4" />
         </>
       ) : (
         props.children
