@@ -56,7 +56,7 @@ export const SchedulesPage = () => {
   };
 
   return (
-    <div>
+    <div className="flex flex-col h-screen">
       <AdminHeader
         title="Schedules"
         actions={
@@ -68,7 +68,7 @@ export const SchedulesPage = () => {
         }
       />
 
-      <div className="p-4">
+      <div className="p-4 overflow-y-auto">
         {!schedules || schedules.length === 0 ? (
           <EmptyContent
             icon={<InfoIcon size={48} className="text-primary" />}

@@ -1,12 +1,12 @@
-import { useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import { useSearchParams } from "react-router";
 
-import { getServicesAction } from "../actions/get-services.action";
-import { ServicesResponse } from "../interfaces/services.response";
+import { getUsersAction } from "../actions/get-users.action";
+import { UsersResponse } from "../interfaces/users.response";
 import { ServerException } from "@/interfaces/server-exception.response";
 
-export const useServices = () => {
+export const useUsers = () => {
   const [searchParams] = useSearchParams();
 
   const limit = searchParams.get("limit") || 9;
@@ -14,14 +14,10 @@ export const useServices = () => {
 
   const offset = (Number(page) - 1) * Number(limit);
 
-  return useQuery<
-    ServicesResponse,
-    AxiosError<ServerException>,
-    ServicesResponse
-  >({
-    queryKey: ["services", { offset, limit }],
+  return useQuery<UsersResponse, AxiosError<ServerException>, UsersResponse>({
+    queryKey: ["users", { offset, limit }],
     queryFn: () =>
-      getServicesAction({
+      getUsersAction({
         limit: isNaN(+limit) ? 9 : limit,
         offset: isNaN(offset) ? 0 : offset,
       }),

@@ -1,15 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+
 import { getServiceByIdAction } from "../actions/get-service-by-id.action";
 import { ServiceResponse } from "../interfaces/service.response";
-import { AxiosError } from "axios";
 import { ServerException } from "@/interfaces/server-exception.response";
 
 export const useService = (id: string) => {
   return useQuery<
     ServiceResponse,
     AxiosError<ServerException>,
-    ServiceResponse,
-    string[]
+    ServiceResponse
   >({
     queryKey: ["service", id],
     queryFn: () => getServiceByIdAction(id),

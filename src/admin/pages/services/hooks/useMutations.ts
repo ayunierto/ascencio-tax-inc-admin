@@ -17,28 +17,30 @@ export const useMutations = () => {
     Partial<Service>
   >({
     mutationFn: createUpdateServiceAction,
-    onSuccess: (updatedService) => {
-      queryClient.setQueryData(["service", updatedService.id], updatedService);
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: ["services"] });
+      queryClient.setQueryData(["service", response.id], response);
 
-      queryClient.setQueryData(["services"], (oldList: ServicesResponse) => {
-        if (!oldList) return { services: [updatedService] };
+      queryClient.setQueryData(
+        ["services"],
+        (oldList: ServicesResponse): ServicesResponse => {
+          if (!oldList) return { services: [response], count: 1, pages: 1 };
 
-        if (
-          !oldList.services.find((service) => service.id === updatedService.id)
-        ) {
+          if (!oldList.services.find((service) => service.id === response.id)) {
+            return {
+              ...oldList,
+              services: [...oldList.services, response],
+            };
+          }
+
           return {
             ...oldList,
-            services: [...oldList.services, updatedService],
+            services: oldList.services.map((s) =>
+              s.id === response.id ? response : s
+            ),
           };
         }
-
-        return {
-          ...oldList,
-          services: oldList.services.map((s) =>
-            s.id === updatedService.id ? updatedService : s
-          ),
-        };
-      });
+      );
     },
   });
 
@@ -50,10 +52,16 @@ export const useMutations = () => {
   >({
     mutationFn: deleteServiceAction,
     onSuccess: (_data, id) => {
-      queryClient.setQueryData(["services"], (oldList: ServiceResponse[]) => {
-        if (!oldList) return [];
-        return oldList.filter((s) => s.id !== id);
-      });
+      queryClient.setQueryData(
+        ["services"],
+        (oldList: ServicesResponse): ServicesResponse => {
+          if (!oldList) return { services: [], count: 0, pages: 0 };
+          return {
+            ...oldList,
+            services: oldList.services.filter((service) => service.id !== id),
+          };
+        }
+      );
 
       queryClient.removeQueries({ queryKey: ["service", id] });
     },

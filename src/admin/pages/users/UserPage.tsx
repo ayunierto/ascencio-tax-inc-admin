@@ -2,14 +2,13 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, Navigate, useNavigate, useParams } from "react-router";
+import { Navigate, useNavigate, useParams } from "react-router";
 import { ArrowLeft, ArrowRight, ImageIcon, SaveIcon } from "lucide-react";
 
 import { AdminHeader } from "@/admin/components/AdminHeader";
 import { Button } from "@/components/ui/button";
 import { Loader } from "@/components/Loader";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Service, serviceSchema } from "./schemas/service.schema";
 import {
   Form,
   FormControl,
@@ -20,7 +19,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import EmptyContent from "@/components/EmptyContent";
-import { useService } from "./hooks/useService";
 import { useMutations } from "./hooks/useMutations";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -31,57 +29,63 @@ import {
   MultiSelectTrigger,
   MultiSelectValue,
 } from "@/components/ui/multi-select";
-import { useAllStaff } from "../staff/hooks/useAllStaff";
-import { Textarea } from "@/components/ui/textarea";
 
-export const ServicePage = () => {
+import { User, userSchema } from "./schemas/user.schema";
+import { useUser } from "./hooks/useUser";
+import { Role } from "./interfaces/role.enum";
+
+export const UserPage = () => {
   const { id } = useParams();
-  const { data: service, isLoading, isError, error } = useService(id || "new");
+  const { data: user, isLoading, isError, error } = useUser(id || "new");
   const { mutation } = useMutations();
   const navigate = useNavigate();
   const [newImage, setNewImage] = useState<File | null>(null);
-  const form = useForm<Service>({
-    resolver: zodResolver(serviceSchema),
+  const form = useForm<User>({
+    resolver: zodResolver(userSchema),
     defaultValues: {
-      id: undefined,
-      address: "",
+      id: "new",
+      countryCode: "",
+      email: "",
+      firstName: "",
       isActive: true,
-      description: "",
-      duration: 0,
-      isAvailableOnline: false,
-      name: "",
-      staff: [],
+      isEmailVerified: false,
+      lastName: "",
+      locale: "",
+      password: undefined,
+      phoneNumber: "",
+      roles: [],
     },
   });
 
-  const { data: staff, isLoading: isLoadingStaff } = useAllStaff();
+  const roles: Role[] = [Role.SuperUser, Role.Admin, Role.Staff, Role.User];
 
   // Update form values when schedule changes
   useEffect(() => {
-    if (service) {
+    if (user) {
       form.reset({
-        id: service.id,
-        isActive: service.isActive,
-        name: service.name,
-        duration: service.duration,
-        description: service.description || "",
-        address: service.address,
-        isAvailableOnline: service.isAvailableOnline,
-        staff: service.staff.map((s) => s.id),
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        isActive: user.isActive,
+        countryCode: user.countryCode || "",
+        isEmailVerified: user.isEmailVerified,
+        locale: user.locale || "",
+        phoneNumber: user.phoneNumber || "",
+        roles: user.roles,
+        password: undefined,
       });
     }
-  }, [service, form]);
+  }, [user, form]);
 
-  const onSubmit = async (serviceLike: Partial<Service>) => {
-    await mutation.mutateAsync(serviceLike, {
-      onSuccess(service, variables) {
+  const onSubmit = async (userLike: Partial<User>) => {
+    await mutation.mutateAsync(userLike, {
+      onSuccess(user, variables) {
         toast.success(
-          `Service ${
-            variables.id === "new" ? "created" : "updated"
-          } successfully`
+          `User ${variables.id === "new" ? "created" : "updated"} successfully`
         );
         setNewImage(null);
-        navigate(`/admin/services/${service.id}`);
+        navigate(`/admin/users/${user.id}`);
       },
       onError: (error) => {
         toast.error(
@@ -103,7 +107,7 @@ export const ServicePage = () => {
     );
   }
   if (isLoading) return <Loader />;
-  if (!service) return <Navigate to={"/admin/services"} />;
+  if (!user) return <Navigate to={"/admin/users"} />;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -116,9 +120,9 @@ export const ServicePage = () => {
       <AdminHeader
         backButton={{
           icon: ArrowLeft,
-          onClick: () => navigate("/admin/services"),
+          onClick: () => navigate("/admin/users"),
         }}
-        title={id === "new" ? "Add Service" : "Edit Service"}
+        title={id === "new" ? "Add User" : "Edit User"}
         actions={
           <Button
             onClick={form.handleSubmit(onSubmit)}
@@ -137,8 +141,8 @@ export const ServicePage = () => {
               <CardContent className="flex flex-col gap-4 border-b pb-4 md:flex-row ">
                 <div className="flex items-center gap-4 mx-auto">
                   <img
-                    src={service.imageUrl || "/logo.png"}
-                    alt="Service Image"
+                    src={user.imageUrl || "/logo.png"}
+                    alt="User Image"
                     className="w-20 h-20 object-cover rounded-md "
                   />
                   {newImage && (
@@ -146,7 +150,7 @@ export const ServicePage = () => {
                       <ArrowRight className="self-center" />
                       <img
                         src={URL.createObjectURL(newImage)}
-                        alt="Service Image"
+                        alt="User Image"
                         className="w-20 h-20 object-cover rounded-md "
                       />
                     </div>
@@ -182,13 +186,13 @@ export const ServicePage = () => {
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   <FormField
                     control={form.control}
-                    name="name"
+                    name="firstName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Name</FormLabel>
+                        <FormLabel>First Name</FormLabel>
 
                         <FormControl>
-                          <Input placeholder="Service name" {...field} />
+                          <Input placeholder="User first name" {...field} />
                         </FormControl>
 
                         <FormMessage />
@@ -198,17 +202,48 @@ export const ServicePage = () => {
 
                   <FormField
                     control={form.control}
-                    name="duration"
+                    name="lastName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Duration (minutes)</FormLabel>
+                        <FormLabel>Last Name</FormLabel>
+
+                        <FormControl>
+                          <Input placeholder="User last name" {...field} />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+
+                        <FormControl>
+                          <Input placeholder="Email" {...field} />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
 
                         <FormControl>
                           <Input
-                            type="number"
-                            placeholder="Service duration"
-                            value={field.value}
-                            onChange={(e) => field.onChange(+e.target.value)}
+                            placeholder="******"
+                            {...field}
+                            required={id === "new"}
                           />
                         </FormControl>
 
@@ -219,13 +254,13 @@ export const ServicePage = () => {
 
                   <FormField
                     control={form.control}
-                    name="address"
+                    name="countryCode"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Address</FormLabel>
+                        <FormLabel>Country Code</FormLabel>
 
                         <FormControl>
-                          <Input placeholder="Address" {...field} />
+                          <Input placeholder="+1" {...field} />
                         </FormControl>
 
                         <FormMessage />
@@ -235,21 +270,32 @@ export const ServicePage = () => {
 
                   <FormField
                     control={form.control}
-                    name="isAvailableOnline"
+                    name="phoneNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Online Availability</FormLabel>
+                        <FormLabel>Phone Number</FormLabel>
+
                         <FormControl>
-                          <div className="flex items-center justify-between border border-input h-9 rounded-md px-3">
-                            <p className="text-sm">
-                              {field.value ? "Available" : "Not available"}
-                            </p>
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </div>
+                          <Input placeholder="123 4567 890" {...field} />
                         </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="locale"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Locale</FormLabel>
+
+                        <FormControl>
+                          <Input placeholder="en-CA" {...field} />
+                        </FormControl>
+
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -277,10 +323,10 @@ export const ServicePage = () => {
 
                   <FormField
                     control={form.control}
-                    name="staff"
+                    name="roles"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Staff</FormLabel>
+                        <FormLabel>Roles</FormLabel>
                         <MultiSelect
                           onValuesChange={field.onChange}
                           values={field.value}
@@ -288,36 +334,17 @@ export const ServicePage = () => {
                           <FormControl>
                             <MultiSelectTrigger className="w-full">
                               <MultiSelectValue
-                                placeholder={`${
-                                  isLoadingStaff
-                                    ? "Loading..."
-                                    : staff && staff.length > 0
-                                    ? "Select staff..."
-                                    : "No staff available"
-                                }`}
+                                placeholder={`Select roles...`}
                               />
                             </MultiSelectTrigger>
                           </FormControl>
                           <MultiSelectContent>
                             <MultiSelectGroup>
-                              {staff && staff.length > 0 ? (
-                                staff.map(({ id, firstName, lastName }) => (
-                                  <MultiSelectItem key={id} value={id}>
-                                    {firstName} {lastName}
-                                  </MultiSelectItem>
-                                ))
-                              ) : (
-                                <>
-                                  <MultiSelectItem value="none">
-                                    <Link
-                                      to={"/admin/staff/new"}
-                                      className="text-blue-500"
-                                    >
-                                      Create a new staff
-                                    </Link>
-                                  </MultiSelectItem>
-                                </>
-                              )}
+                              {roles.map((role) => (
+                                <MultiSelectItem key={role} value={role}>
+                                  {role}
+                                </MultiSelectItem>
+                              ))}
                             </MultiSelectGroup>
                           </MultiSelectContent>
                         </MultiSelect>
@@ -328,19 +355,21 @@ export const ServicePage = () => {
 
                   <FormField
                     control={form.control}
-                    name="description"
+                    name="isEmailVerified"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Description</FormLabel>
-
+                        <FormLabel>Email Verified</FormLabel>
                         <FormControl>
-                          <Textarea
-                            placeholder="Service description"
-                            {...field}
-                          />
+                          <div className="flex items-center justify-between border border-input h-9 rounded-md px-3">
+                            <p className="text-sm">
+                              {field.value ? "Verified" : "Not Verified"}
+                            </p>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </div>
                         </FormControl>
-
-                        <FormMessage />
                       </FormItem>
                     )}
                   />

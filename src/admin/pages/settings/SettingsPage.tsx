@@ -2,14 +2,14 @@ import { AdminHeader } from "@/admin/components/AdminHeader";
 import { Label } from "@/components/ui/label";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { ToggleTheme } from "@/components/ToggleTheme";
+import { SelectTheme } from "@/components/SelectTheme";
 
 export const SettingsPage = () => {
   return (
-    <div>
+    <div className="flex flex-col h-screen">
       <AdminHeader title="Settings" />
 
-      <div className="p-4">
+      <div className="p-4 overflow-y-auto">
         <Card>
           <CardContent>
             <div>
@@ -17,7 +17,7 @@ export const SettingsPage = () => {
                 <div className="flex items-center gap-2">
                   <Label htmlFor="dark-mode">Theme</Label>
                 </div>
-                <ToggleTheme />
+                <SelectTheme />
               </div>
             </div>
           </CardContent>

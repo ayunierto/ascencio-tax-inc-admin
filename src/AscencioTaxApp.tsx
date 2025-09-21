@@ -42,7 +42,7 @@ export const AscencioTaxApp = () => {
               <RouterProvider router={appRouter} />
             </AnimatePresence>
           </CheckAuthProvider>
-          <Toaster position="top-right" richColors />
+          <Toaster position="top-right" richColors duration={5000} />
         </TooltipProvider>
         <ReactQueryDevtools />
       </ThemeProvider>

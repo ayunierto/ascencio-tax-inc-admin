@@ -1,12 +1,12 @@
 import { api } from "@/api/api";
-import { Service } from "../schemas/service.schema";
-import { ServiceResponse } from "../interfaces/service.response";
+import { User } from "../schemas/user.schema";
+import { UserResponse } from "../interfaces/user.response";
 import { uploadImageFile } from "@/admin/actions/upload-image-file.action";
 
-export const createUpdateServiceAction = async (
-  serviceLike: Partial<Service>
-): Promise<ServiceResponse> => {
-  const { id, imageFile, imageUrl, ...rest } = serviceLike;
+export const createUpdateUserAction = async (
+  userLike: Partial<User>
+): Promise<UserResponse> => {
+  const { id, imageFile, imageUrl, ...rest } = userLike;
 
   const isCreating = id === "new";
 
@@ -17,8 +17,8 @@ export const createUpdateServiceAction = async (
       imageUrlToSave = uploadedImage;
     }
 
-    const { data } = await api<ServiceResponse>({
-      url: isCreating ? "/services" : `/services/${id}`,
+    const { data } = await api<UserResponse>({
+      url: isCreating ? "/users" : `/users/${id}`,
       method: isCreating ? "POST" : "PATCH",
       data: { ...rest, imageUrl: imageUrlToSave ?? imageUrl },
     });

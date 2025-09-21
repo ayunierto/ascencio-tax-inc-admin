@@ -10,15 +10,14 @@ export const getServiceByIdAction = async (
         id: "new",
         name: "",
         duration: 0,
-        price: 0,
         address: "",
         isAvailableOnline: false,
-
         isActive: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: "",
+        updatedAt: "",
         description: "",
         staff: [],
+        imageUrl: undefined,
       };
     }
     const { data } = await api.get<ServiceResponse>(`/services/${id}`);

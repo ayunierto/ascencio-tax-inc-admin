@@ -56,7 +56,7 @@ export const StaffPage = () => {
   };
 
   return (
-    <div>
+    <div className="flex flex-col h-screen">
       <AdminHeader
         title="Staff"
         actions={
@@ -68,7 +68,7 @@ export const StaffPage = () => {
         }
       />
 
-      <div className="p-4">
+      <div className="p-4 overflow-y-auto">
         {!staff || staff.length === 0 ? (
           <EmptyContent
             icon={<InfoIcon size={48} className="text-primary" />}
