@@ -8,11 +8,9 @@ export const getScheduleByIdAction = async (
     if (id === "new") {
       return {
         id: "new",
-        weekday: 0,
+        dayOfWeek: 0,
         startTime: "",
         endTime: "",
-        createdAt: "",
-        updatedAt: "",
       };
     }
     const { data } = await api.get<ScheduleResponse>(`/schedules/${id}`);

@@ -31,7 +31,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import EmptyContent from "@/components/EmptyContent";
-import { ResendEmailCodeMutation } from "@/auth/mutations/resend-email-code.mutation";
+import { useResendEmailCodeMutation } from "@/auth/mutations/resend-email-code.mutation";
 import { useCountdown } from "@/hooks/useCountdown";
 
 export const VerifyEmailPage = () => {
@@ -92,7 +92,7 @@ export const VerifyEmailPage = () => {
     return;
   };
 
-  const resendCodeMutation = ResendEmailCodeMutation();
+  const resendCodeMutation = useResendEmailCodeMutation();
 
   const handleResendCode = async (): Promise<void> => {
     if (!tempEmail) {

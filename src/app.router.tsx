@@ -2,7 +2,6 @@ import { lazy } from "react";
 import { createBrowserRouter, Navigate } from "react-router";
 import { AppLayout } from "./app/layout/AppLayout";
 import { HomePage } from "./app/pages/home/HomePage";
-import { AppointmentPage } from "./app/pages/appointment/AppointmentPage";
 import { AppointmentsPage } from "./app/pages/appointments/AppointmentsPage";
 import { SignInPage } from "./auth/pages/signin/SignInPage";
 import { SignUpPage } from "./auth/pages/signup/SignupPage";
@@ -21,6 +20,7 @@ import { ServicePage } from "./admin/pages/services/ServicePage";
 import { SettingsPage } from "./admin/pages/settings/SettingsPage";
 import { UsersPage } from "./admin/pages/users/UsersPage";
 import { UserPage } from "./admin/pages/users/UserPage";
+import { BookPage } from "./app/pages/book/BookPage";
 
 const AuthLayout = lazy(() => import("./auth/layout/AuthLayout"));
 const AdminLayout = lazy(() => import("./admin/layout/AdminLayout"));
@@ -33,7 +33,7 @@ export const appRouter = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: "appointments", element: <AppointmentsPage /> },
-      { path: "appointment/:id", element: <AppointmentPage /> },
+      { path: "book/:id", element: <BookPage /> },
     ],
   },
   // Auth routes

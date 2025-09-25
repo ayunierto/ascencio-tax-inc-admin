@@ -1,18 +1,18 @@
+import { AxiosError } from "axios";
 import { useQuery } from "@tanstack/react-query";
-import { getStaffByIdAction } from "../actions/get-staff-by-id.action";
+
+import { getStaffAction } from "../actions/get-staff.action";
 import { StaffResponse } from "../interfaces/staff.response";
 import { ServerException } from "@/interfaces/server-exception.response";
-import { AxiosError } from "axios";
 
-export const useStaff = (id: string) => {
+export const useStaff = () => {
   return useQuery<
-    StaffResponse,
+    StaffResponse[],
     AxiosError<ServerException>,
-    StaffResponse,
-    string[]
+    StaffResponse[]
   >({
-    queryKey: ["staff", id],
-    queryFn: () => getStaffByIdAction(id),
+    queryKey: ["staff"],
+    queryFn: () => getStaffAction(),
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false,
     retry: false,

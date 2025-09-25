@@ -36,13 +36,14 @@ import EmptyContent from "@/components/EmptyContent";
 import { useMutations } from "./hooks/useMutations";
 
 const weekdays = [
+  // 0 (Sunday) to 6 (Saturday)
+  { value: 0, label: "Sunday" },
   { value: 1, label: "Monday" },
   { value: 2, label: "Tuesday" },
   { value: 3, label: "Wednesday" },
   { value: 4, label: "Thursday" },
   { value: 5, label: "Friday" },
   { value: 6, label: "Saturday" },
-  { value: 7, label: "Sunday" },
 ];
 
 export const SchedulePage = () => {
@@ -61,7 +62,7 @@ export const SchedulePage = () => {
       id: undefined,
       startTime: undefined,
       endTime: undefined,
-      weekday: undefined,
+      dayOfWeek: undefined,
     },
   });
 
@@ -72,7 +73,7 @@ export const SchedulePage = () => {
         id: schedule.id,
         startTime: schedule.startTime,
         endTime: schedule.endTime,
-        weekday: schedule.weekday === 0 ? undefined : schedule.weekday,
+        dayOfWeek: schedule.dayOfWeek === 0 ? undefined : schedule.dayOfWeek,
       });
     }
   }, [schedule, form]);
@@ -136,16 +137,16 @@ export const SchedulePage = () => {
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   <FormField
                     control={form.control}
-                    name="weekday"
+                    name="dayOfWeek"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Weekday</FormLabel>
                         <Select
                           onValueChange={(value) => field.onChange(+value)}
                           defaultValue={
-                            schedule.weekday === 0
+                            schedule.dayOfWeek === 0
                               ? undefined
-                              : schedule.weekday?.toString()
+                              : schedule.dayOfWeek?.toString()
                           }
                         >
                           <FormControl>

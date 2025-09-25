@@ -1,8 +1,6 @@
 export interface ScheduleResponse {
   id: string;
-  weekday: number;
+  dayOfWeek: number;
   startTime: string;
   endTime: string;
-  createdAt: string;
-  updatedAt: string;
 }

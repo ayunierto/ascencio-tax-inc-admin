@@ -21,7 +21,7 @@ export const Pagination = ({ totalPages }: PaginationProps) => {
   };
 
   return (
-    <div className="flex items-center justify-center space-x-2">
+    <div className="flex items-center justify-center space-x-2 mb-8">
       <Button
         variant="ghost"
         size="sm"

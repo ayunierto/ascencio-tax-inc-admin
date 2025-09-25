@@ -26,7 +26,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import EmptyContent from "@/components/EmptyContent";
-import { useStaff } from "./hooks/useStaff";
 import { useMutations } from "./hooks/useMutations";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -38,6 +37,7 @@ import {
   MultiSelectValue,
 } from "@/components/ui/multi-select";
 import { useSchedules } from "../schedules/hooks/useSchedules";
+import { useStaffMember } from "./hooks/useStaffMember";
 
 export const StaffMemberPage = () => {
   const { id } = useParams();
@@ -46,7 +46,7 @@ export const StaffMemberPage = () => {
     isLoading,
     isError,
     error,
-  } = useStaff(id || "new");
+  } = useStaffMember(id || "new");
   const { mutation } = useMutations();
   const navigate = useNavigate();
   const form = useForm<Staff>({
@@ -218,10 +218,10 @@ export const StaffMemberPage = () => {
                             <MultiSelectGroup>
                               {schedules && schedules.length > 0 ? (
                                 schedules.map(
-                                  ({ id, weekday, startTime, endTime }) => (
+                                  ({ id, dayOfWeek, startTime, endTime }) => (
                                     <MultiSelectItem key={id} value={id}>
                                       {`${DateTime.fromObject({
-                                        weekday: weekday as WeekdayNumbers,
+                                        weekday: dayOfWeek as WeekdayNumbers,
                                       }).toFormat("cccc")}: ${DateTime.fromISO(
                                         startTime
                                       ).toFormat(

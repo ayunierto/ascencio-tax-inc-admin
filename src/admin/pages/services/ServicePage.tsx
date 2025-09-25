@@ -31,7 +31,7 @@ import {
   MultiSelectTrigger,
   MultiSelectValue,
 } from "@/components/ui/multi-select";
-import { useAllStaff } from "../staff/hooks/useAllStaff";
+import { useStaff } from "../staff/hooks/useStaff";
 import { Textarea } from "@/components/ui/textarea";
 
 export const ServicePage = () => {
@@ -54,7 +54,7 @@ export const ServicePage = () => {
     },
   });
 
-  const { data: staff, isLoading: isLoadingStaff } = useAllStaff();
+  const { data: staff, isLoading: isLoadingStaff } = useStaff();
 
   // Update form values when schedule changes
   useEffect(() => {

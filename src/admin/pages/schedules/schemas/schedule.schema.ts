@@ -3,7 +3,7 @@ import z from "zod";
 export const scheduleSchema = z
   .object({
     id: z.string(),
-    weekday: z.number({ required_error: "Weekday is required" }),
+    dayOfWeek: z.number({ required_error: "Weekday is required" }), // 0 (Sunday) to 6 (Saturday)
     startTime: z
       .string({ required_error: "The start time field is required" })
       .regex(
@@ -18,6 +18,7 @@ export const scheduleSchema = z
       ),
   })
   .refine(
+    // Custom validation to ensure endTime is after startTime
     (data) => {
       // Create date objects for comparison
       const start = new Date(`1970-01-01T${data.startTime}:00`);

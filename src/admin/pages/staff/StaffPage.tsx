@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useAllStaff } from "./hooks/useAllStaff";
+import { useStaff } from "./hooks/useStaff";
 import { Loader } from "@/components/Loader";
 import { Card, CardContent } from "@/components/ui/card";
 import { useMutations } from "./hooks/useMutations";
@@ -37,7 +37,7 @@ import { Badge } from "@/components/ui/badge";
 import EmptyContent from "@/components/EmptyContent";
 
 export const StaffPage = () => {
-  const { data: staff, isLoading, isError, error } = useAllStaff();
+  const { data: staff, isLoading, isError, error } = useStaff();
   const { deleteMutation } = useMutations();
 
   if (isLoading) return <Loader />;
