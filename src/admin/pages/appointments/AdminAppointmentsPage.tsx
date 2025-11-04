@@ -5,8 +5,6 @@ import {
   PlusCircle,
   PlusCircleIcon,
   Trash2Icon,
-  VideoIcon,
-  VideoOff,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -20,8 +18,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useServices } from './hooks/useServices';
+import { useAppointments } from './hooks/useAppointments';
 import { Loader } from '@/components/Loader';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { useMutations } from './hooks/useMutations';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,14 +33,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Badge } from '@/components/ui/badge';
 import EmptyContent from '@/components/EmptyContent';
 import { Pagination } from '@/components/Pagination';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { useMutations } from './hooks/useMutations';
+import { DateTime } from 'luxon';
 
-export const ServicesPage = () => {
-  const { data: services, isLoading, isError, error } = useServices();
+export const AdminAppointmentsPage = () => {
+  const { data: appointments, isLoading, isError, error } = useAppointments();
   const { deleteMutation } = useMutations();
 
   if (isLoading) return <Loader />;
@@ -49,7 +47,7 @@ export const ServicesPage = () => {
   const onDelete = async (id: string) => {
     await deleteMutation.mutateAsync(id, {
       onSuccess: () => {
-        toast.success('Service deleted');
+        toast.success('Appointment deleted');
       },
       onError: (error) => {
         toast.error(
@@ -64,25 +62,25 @@ export const ServicesPage = () => {
   return (
     <div className="flex flex-col h-screen">
       <AdminHeader
-        title="Services"
+        title="Appointments"
         actions={
           <Button asChild>
-            <Link to={'/admin/services/new'}>
+            <Link to={'/admin/appointments/new'}>
               <PlusCircleIcon />
             </Link>
           </Button>
         }
       />
       <div className="p-4 overflow-y-auto ">
-        {!services || services.services.length === 0 ? (
+        {!appointments || appointments.appointments.length === 0 ? (
           <EmptyContent
             icon={<InfoIcon size={48} className="text-primary" />}
-            title="No services found"
-            description="Please add a service."
+            title="No appointments found"
+            description="Please add a appointment."
             action={
               <Button asChild>
-                <Link to="/admin/services/new">
-                  <PlusCircle /> Add Service
+                <Link to="/admin/appointments/new">
+                  <PlusCircle /> Add Appointment
                 </Link>
               </Button>
             }
@@ -94,62 +92,35 @@ export const ServicesPage = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Image</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Price</TableHead>
-                      <TableHead>Online</TableHead>
-                      <TableHead>State</TableHead>
+                      <TableHead>Start</TableHead>
+                      <TableHead>End</TableHead>
+                      <TableHead>Service</TableHead>
+                      <TableHead>Staff</TableHead>
                       <TableHead className="text-center">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {services &&
-                      services.services.map((service) => (
-                        <TableRow key={service.id}>
+                    {appointments &&
+                      appointments.appointments.map((appointment) => (
+                        <TableRow key={appointment.id}>
                           <TableCell>
-                            <img
-                              src={
-                                service.imageUrl || 'https://placehold.co/150'
-                              }
-                              alt="service image"
-                              className="h-10 w-10 rounded-md object-cover"
-                            />
-                          </TableCell>
-                          <TableCell>{service.name}</TableCell>
-                          <TableCell>{service.durationMinutes}</TableCell>
-                          <TableCell>
-                            {service.isAvailableOnline ? (
-                              <Badge
-                                variant="outline"
-                                className="bg-green-500/50"
-                              >
-                                <VideoIcon size={16} className="mr-1" />
-                                Online
-                              </Badge>
-                            ) : (
-                              <Badge variant="destructive">
-                                <VideoOff size={16} className="mr-1" />
-                                Offline
-                              </Badge>
+                            {DateTime.fromISO(appointment.start).toLocaleString(
+                              DateTime.DATETIME_MED_WITH_WEEKDAY
                             )}
                           </TableCell>
-
                           <TableCell>
-                            {service.isActive ? (
-                              <Badge
-                                variant="outline"
-                                className="bg-green-500/50"
-                              >
-                                Active
-                              </Badge>
-                            ) : (
-                              <Badge variant="destructive">Inactive</Badge>
+                            {DateTime.fromISO(appointment.end).toLocaleString(
+                              DateTime.DATETIME_MED_WITH_WEEKDAY
                             )}
                           </TableCell>
+                          <TableCell>{appointment.service?.name}</TableCell>
+                          <TableCell>{appointment.staff?.firstName}</TableCell>
 
                           <TableCell className="text-center">
                             <Button variant="ghost" asChild size={'sm'}>
-                              <Link to={`/admin/services/${service.id}`}>
+                              <Link
+                                to={`/admin/appointments/${appointment.id}`}
+                              >
                                 <EditIcon size={16} />
                               </Link>
                             </Button>
@@ -170,13 +141,13 @@ export const ServicesPage = () => {
                                   </AlertDialogTitle>
                                   <AlertDialogDescription>
                                     This action cannot be undone. This will
-                                    permanently delete the service.
+                                    permanently delete the appointment.
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                                   <AlertDialogAction
-                                    onClick={() => onDelete(service.id)}
+                                    onClick={() => onDelete(appointment.id)}
                                   >
                                     Continue
                                   </AlertDialogAction>
@@ -191,7 +162,7 @@ export const ServicesPage = () => {
               </CardContent>
 
               <CardFooter className="flex justify-center gap-2">
-                <Pagination totalPages={services.pages} />
+                <Pagination totalPages={appointments.pages} />
               </CardFooter>
             </Card>
           </div>

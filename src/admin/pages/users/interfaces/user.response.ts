@@ -1,4 +1,4 @@
-import { Role } from "./role.enum";
+import { Role } from './role.enum';
 
 export interface UserResponse {
   id: string;
@@ -19,5 +19,6 @@ export interface UserResponse {
   passwordResetExpiresAt?: string;
   lastLoginAt?: string;
   createdAt: string;
+  timeZone: string;
   updatedAt: string;
 }
