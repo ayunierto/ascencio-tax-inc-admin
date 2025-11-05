@@ -1,21 +1,21 @@
-import { useEffect } from "react";
-import { toast } from "sonner";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, Navigate, useNavigate, useParams } from "react-router";
-import { ArrowLeft, SaveIcon } from "lucide-react";
-import { DateTime, WeekdayNumbers } from "luxon";
+import { useEffect } from 'react';
+import { toast } from 'sonner';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Link, Navigate, useNavigate, useParams } from 'react-router';
+import { ArrowLeft, SaveIcon } from 'lucide-react';
+import { DateTime, WeekdayNumbers } from 'luxon';
 
-import { AdminHeader } from "@/admin/components/AdminHeader";
-import { Button } from "@/components/ui/button";
-import { Loader } from "@/components/Loader";
+import { AdminHeader } from '@/admin/components/AdminHeader';
+import { Button } from '@/components/ui/button';
+import { Loader } from '@/components/Loader';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
-} from "@/components/ui/card";
-import { Staff, staffSchema } from "./schemas/staff.schema";
+} from '@/components/ui/card';
+import { Staff, staffSchema } from './schemas/staff.schema';
 import {
   Form,
   FormControl,
@@ -23,11 +23,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import EmptyContent from "@/components/EmptyContent";
-import { useMutations } from "./hooks/useMutations";
-import { Switch } from "@/components/ui/switch";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import EmptyContent from '@/components/EmptyContent';
+import { useMutations } from './hooks/useMutations';
+import { Switch } from '@/components/ui/switch';
 import {
   MultiSelect,
   MultiSelectContent,
@@ -35,9 +35,9 @@ import {
   MultiSelectItem,
   MultiSelectTrigger,
   MultiSelectValue,
-} from "@/components/ui/multi-select";
-import { useSchedules } from "../schedules/hooks/useSchedules";
-import { useStaffMember } from "./hooks/useStaffMember";
+} from '@/components/ui/multi-select';
+import { useSchedules } from '../schedules/hooks/useSchedules';
+import { useStaffMember } from './hooks/useStaffMember';
 
 export const StaffMemberPage = () => {
   const { id } = useParams();
@@ -46,15 +46,15 @@ export const StaffMemberPage = () => {
     isLoading,
     isError,
     error,
-  } = useStaffMember(id || "new");
+  } = useStaffMember(id || 'new');
   const { mutation } = useMutations();
   const navigate = useNavigate();
   const form = useForm<Staff>({
     resolver: zodResolver(staffSchema),
     defaultValues: {
       id: undefined,
-      firstName: "",
-      lastName: "",
+      firstName: '',
+      lastName: '',
       isActive: true,
       schedules: [],
       services: [],
@@ -71,7 +71,9 @@ export const StaffMemberPage = () => {
         firstName: staffMember.firstName,
         lastName: staffMember.lastName,
         isActive: staffMember.isActive,
-        schedules: staffMember.schedules.map((schedule) => schedule.id),
+        schedules: staffMember.schedules
+          ? staffMember.schedules.map((schedule) => schedule.id)
+          : [],
       });
     }
   }, [staffMember, form]);
@@ -80,7 +82,7 @@ export const StaffMemberPage = () => {
     await mutation.mutateAsync(staffMemberLike, {
       onSuccess(member, variables) {
         toast.success(
-          `Staff ${variables.id === "new" ? "created" : "updated"} successfully`
+          `Staff ${variables.id === 'new' ? 'created' : 'updated'} successfully`
         );
         form.reset({
           firstName: member.firstName,
@@ -95,7 +97,7 @@ export const StaffMemberPage = () => {
         toast.error(
           error.response?.data?.message ||
             error.message ||
-            "An unexpected error occurred. "
+            'An unexpected error occurred. '
         );
       },
     });
@@ -111,23 +113,23 @@ export const StaffMemberPage = () => {
     );
   }
   if (isLoading) return <Loader />;
-  if (!staffMember) return <Navigate to={"/admin/staff"} />;
+  if (!staffMember) return <Navigate to={'/admin/staff'} />;
 
   return (
     <div>
       <AdminHeader
         backButton={{
           icon: ArrowLeft,
-          onClick: () => navigate("/admin/staff"),
+          onClick: () => navigate('/admin/staff'),
         }}
-        title={id === "new" ? "Add Staff" : "Edit Staff"}
+        title={id === 'new' ? 'Add Staff' : 'Edit Staff'}
         actions={
           <Button
             onClick={form.handleSubmit(onSubmit)}
             loading={mutation.isPending}
             disabled={mutation.isPending}
           >
-            {mutation.isPending ? "" : <SaveIcon />}
+            {mutation.isPending ? '' : <SaveIcon />}
           </Button>
         }
       />
@@ -180,7 +182,7 @@ export const StaffMemberPage = () => {
                         <FormControl>
                           <div className="flex items-center justify-between border border-input h-9 rounded-md px-3">
                             <p className="text-sm">
-                              {field.value ? "Active" : "Inactive"}
+                              {field.value ? 'Active' : 'Inactive'}
                             </p>
                             <Switch
                               checked={field.value}
@@ -206,10 +208,10 @@ export const StaffMemberPage = () => {
                               <MultiSelectValue
                                 placeholder={`${
                                   isLoadingSchedules
-                                    ? "Loading..."
+                                    ? 'Loading...'
                                     : schedules && schedules.length > 0
-                                    ? "Select schedules..."
-                                    : "No schedules available"
+                                    ? 'Select schedules...'
+                                    : 'No schedules available'
                                 }`}
                               />
                             </MultiSelectTrigger>
@@ -222,12 +224,12 @@ export const StaffMemberPage = () => {
                                     <MultiSelectItem key={id} value={id}>
                                       {`${DateTime.fromObject({
                                         weekday: dayOfWeek as WeekdayNumbers,
-                                      }).toFormat("cccc")}: ${DateTime.fromISO(
+                                      }).toFormat('cccc')}: ${DateTime.fromISO(
                                         startTime
                                       ).toFormat(
-                                        "hh:mm a"
+                                        'hh:mm a'
                                       )} - ${DateTime.fromISO(endTime).toFormat(
-                                        "hh:mm a"
+                                        'hh:mm a'
                                       )}`}
                                     </MultiSelectItem>
                                   )
@@ -236,7 +238,7 @@ export const StaffMemberPage = () => {
                                 <>
                                   <MultiSelectItem value="none">
                                     <Link
-                                      to={"/admin/schedules/new"}
+                                      to={'/admin/schedules/new'}
                                       className="text-blue-500"
                                     >
                                       Create a new schedule
@@ -259,7 +261,7 @@ export const StaffMemberPage = () => {
                   disabled={mutation.isPending}
                   loading={mutation.isPending}
                 >
-                  <SaveIcon /> {id === "new" ? "Save" : "Update"}
+                  <SaveIcon /> {id === 'new' ? 'Save' : 'Update'}
                 </Button>
               </CardFooter>
             </Card>

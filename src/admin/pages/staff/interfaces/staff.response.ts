@@ -6,9 +6,9 @@ export interface StaffResponse {
   firstName: string;
   lastName: string;
   isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: null;
-  services: ServiceResponse[];
-  schedules: ScheduleResponse[];
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+  services?: ServiceResponse[];
+  schedules?: ScheduleResponse[];
 }

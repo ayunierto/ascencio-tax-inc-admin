@@ -243,7 +243,7 @@ export const AdminAppointmentPage = () => {
                   <FormField
                     control={form.control}
                     name="start"
-                    render={({ field }) => (
+                    render={() => (
                       <FormItem>
                         <FormLabel>Start date and time</FormLabel>
                         <FormControl>
@@ -256,7 +256,7 @@ export const AdminAppointmentPage = () => {
                   <FormField
                     control={form.control}
                     name="timeZone"
-                    render={({ field }) => (
+                    render={() => (
                       <FormItem>
                         <FormLabel>TimeZone</FormLabel>
                         <FormControl>

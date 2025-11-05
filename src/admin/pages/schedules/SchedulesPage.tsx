@@ -1,15 +1,15 @@
-import { Link } from "react-router";
+import { Link } from 'react-router';
 import {
   EditIcon,
   InfoIcon,
   PlusCircle,
   PlusCircleIcon,
   Trash2Icon,
-} from "lucide-react";
-import { DateTime, WeekdayNumbers } from "luxon";
-import { toast } from "sonner";
-import { AdminHeader } from "@/admin/components/AdminHeader";
-import { Button } from "@/components/ui/button";
+} from 'lucide-react';
+import { DateTime, WeekdayNumbers } from 'luxon';
+import { toast } from 'sonner';
+import { AdminHeader } from '@/admin/components/AdminHeader';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -17,11 +17,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { useSchedules } from "./hooks/useSchedules";
-import { Loader } from "@/components/Loader";
-import { Card, CardContent } from "@/components/ui/card";
-import { useMutations } from "./hooks/useMutations";
+} from '@/components/ui/table';
+import { useSchedules } from './hooks/useSchedules';
+import { Loader } from '@/components/Loader';
+import { Card, CardContent } from '@/components/ui/card';
+import { useMutations } from './hooks/useMutations';
 
 import {
   AlertDialog,
@@ -33,8 +33,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import EmptyContent from "@/components/EmptyContent";
+} from '@/components/ui/alert-dialog';
+import EmptyContent from '@/components/EmptyContent';
 
 export const SchedulesPage = () => {
   const { data: schedules, isLoading, isError, error } = useSchedules();
@@ -47,10 +47,10 @@ export const SchedulesPage = () => {
     await deleteMutation.mutateAsync(id, {
       onSuccess: () => {
         // Show a toast notification
-        toast.success("Schedule deleted");
+        toast.success('Schedule deleted');
       },
       onError: (error) => {
-        toast.error(error.message || "An unexpected error occurred. ");
+        toast.error(error.message || 'An unexpected error occurred. ');
       },
     });
   };
@@ -61,7 +61,7 @@ export const SchedulesPage = () => {
         title="Schedules"
         actions={
           <Button asChild>
-            <Link to={"/admin/schedules/new"}>
+            <Link to={'/admin/schedules/new'}>
               <PlusCircleIcon />
             </Link>
           </Button>
@@ -100,21 +100,21 @@ export const SchedulesPage = () => {
                       <TableRow key={schedule.id}>
                         <TableCell>
                           {DateTime.fromObject({
-                            weekday: schedule.weekday as WeekdayNumbers,
-                          }).toFormat("cccc")}
+                            weekday: schedule.dayOfWeek as WeekdayNumbers,
+                          }).toFormat('cccc')}
                         </TableCell>
                         <TableCell>
                           {DateTime.fromISO(schedule.startTime).toFormat(
-                            "hh:mm a"
+                            'hh:mm a'
                           )}
                         </TableCell>
                         <TableCell>
                           {DateTime.fromISO(schedule.endTime).toFormat(
-                            "hh:mm a"
+                            'hh:mm a'
                           )}
                         </TableCell>
                         <TableCell className="flex items-center justify-center gap-1">
-                          <Button variant="ghost" asChild size={"sm"}>
+                          <Button variant="ghost" asChild size={'sm'}>
                             <Link to={`/admin/schedules/${schedule.id}`}>
                               <EditIcon size={16} />
                             </Link>
@@ -123,7 +123,7 @@ export const SchedulesPage = () => {
                             <AlertDialogTrigger asChild>
                               <Button
                                 variant="ghost"
-                                size={"sm"}
+                                size={'sm'}
                                 disabled={deleteMutation.isPending}
                               >
                                 <Trash2Icon size={16} color="red" />

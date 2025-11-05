@@ -11,6 +11,6 @@ export interface ServiceResponse {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
-  deletedAt: null;
+  deletedAt?: string;
   staff: StaffResponse[];
 }

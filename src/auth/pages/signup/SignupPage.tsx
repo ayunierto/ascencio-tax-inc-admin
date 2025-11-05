@@ -1,5 +1,5 @@
-import { SignUpForm } from "@/auth/components";
-import { AnimatedPage } from "@/components/AnimatedPage";
+import { SignUpForm } from '@/auth/components/SignupForm';
+import { AnimatedPage } from '@/components/AnimatedPage';
 
 export const SignUpPage = () => {
   return (

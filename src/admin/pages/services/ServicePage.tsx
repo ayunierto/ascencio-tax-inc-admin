@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, Navigate, useNavigate, useParams } from "react-router";
-import { ArrowLeft, ArrowRight, ImageIcon, SaveIcon } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Link, Navigate, useNavigate, useParams } from 'react-router';
+import { ArrowLeft, ArrowRight, ImageIcon, SaveIcon } from 'lucide-react';
 
-import { AdminHeader } from "@/admin/components/AdminHeader";
-import { Button } from "@/components/ui/button";
-import { Loader } from "@/components/Loader";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Service, serviceSchema } from "./schemas/service.schema";
+import { AdminHeader } from '@/admin/components/AdminHeader';
+import { Button } from '@/components/ui/button';
+import { Loader } from '@/components/Loader';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Service, serviceSchema } from './schemas/service.schema';
 import {
   Form,
   FormControl,
@@ -17,12 +17,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import EmptyContent from "@/components/EmptyContent";
-import { useService } from "./hooks/useService";
-import { useMutations } from "./hooks/useMutations";
-import { Switch } from "@/components/ui/switch";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import EmptyContent from '@/components/EmptyContent';
+import { useService } from './hooks/useService';
+import { useMutations } from './hooks/useMutations';
+import { Switch } from '@/components/ui/switch';
 import {
   MultiSelect,
   MultiSelectContent,
@@ -30,13 +30,13 @@ import {
   MultiSelectItem,
   MultiSelectTrigger,
   MultiSelectValue,
-} from "@/components/ui/multi-select";
-import { useStaff } from "../staff/hooks/useStaff";
-import { Textarea } from "@/components/ui/textarea";
+} from '@/components/ui/multi-select';
+import { useStaff } from '../staff/hooks/useStaff';
+import { Textarea } from '@/components/ui/textarea';
 
 export const ServicePage = () => {
   const { id } = useParams();
-  const { data: service, isLoading, isError, error } = useService(id || "new");
+  const { data: service, isLoading, isError, error } = useService(id || 'new');
   const { mutation } = useMutations();
   const navigate = useNavigate();
   const [newImage, setNewImage] = useState<File | null>(null);
@@ -44,12 +44,12 @@ export const ServicePage = () => {
     resolver: zodResolver(serviceSchema),
     defaultValues: {
       id: undefined,
-      address: "",
+      address: '',
       isActive: true,
-      description: "",
+      description: '',
       duration: 0,
       isAvailableOnline: false,
-      name: "",
+      name: '',
       staff: [],
     },
   });
@@ -63,8 +63,8 @@ export const ServicePage = () => {
         id: service.id,
         isActive: service.isActive,
         name: service.name,
-        duration: service.duration,
-        description: service.description || "",
+        duration: service.durationMinutes,
+        description: service.description || '',
         address: service.address,
         isAvailableOnline: service.isAvailableOnline,
         staff: service.staff.map((s) => s.id),
@@ -77,7 +77,7 @@ export const ServicePage = () => {
       onSuccess(service, variables) {
         toast.success(
           `Service ${
-            variables.id === "new" ? "created" : "updated"
+            variables.id === 'new' ? 'created' : 'updated'
           } successfully`
         );
         setNewImage(null);
@@ -87,7 +87,7 @@ export const ServicePage = () => {
         toast.error(
           error.response?.data?.message ||
             error.message ||
-            "An unexpected error occurred."
+            'An unexpected error occurred.'
         );
       },
     });
@@ -103,11 +103,11 @@ export const ServicePage = () => {
     );
   }
   if (isLoading) return <Loader />;
-  if (!service) return <Navigate to={"/admin/services"} />;
+  if (!service) return <Navigate to={'/admin/services'} />;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    form.setValue("imageFile", file);
+    form.setValue('imageFile', file);
     setNewImage(file || null);
   };
 
@@ -116,16 +116,16 @@ export const ServicePage = () => {
       <AdminHeader
         backButton={{
           icon: ArrowLeft,
-          onClick: () => navigate("/admin/services"),
+          onClick: () => navigate('/admin/services'),
         }}
-        title={id === "new" ? "Add Service" : "Edit Service"}
+        title={id === 'new' ? 'Add Service' : 'Edit Service'}
         actions={
           <Button
             onClick={form.handleSubmit(onSubmit)}
             loading={mutation.isPending}
             disabled={mutation.isPending}
           >
-            {mutation.isPending ? "" : <SaveIcon />}
+            {mutation.isPending ? '' : <SaveIcon />}
           </Button>
         }
       />
@@ -137,7 +137,7 @@ export const ServicePage = () => {
               <CardContent className="flex flex-col gap-4 border-b pb-4 md:flex-row ">
                 <div className="flex items-center gap-4 mx-auto">
                   <img
-                    src={service.imageUrl || "/logo.png"}
+                    src={service.imageUrl || '/logo.png'}
                     alt="Service Image"
                     className="w-20 h-20 object-cover rounded-md "
                   />
@@ -242,7 +242,7 @@ export const ServicePage = () => {
                         <FormControl>
                           <div className="flex items-center justify-between border border-input h-9 rounded-md px-3">
                             <p className="text-sm">
-                              {field.value ? "Available" : "Not available"}
+                              {field.value ? 'Available' : 'Not available'}
                             </p>
                             <Switch
                               checked={field.value}
@@ -263,7 +263,7 @@ export const ServicePage = () => {
                         <FormControl>
                           <div className="flex items-center justify-between border border-input h-9 rounded-md px-3">
                             <p className="text-sm">
-                              {field.value ? "Active" : "Inactive"}
+                              {field.value ? 'Active' : 'Inactive'}
                             </p>
                             <Switch
                               checked={field.value}
@@ -290,10 +290,10 @@ export const ServicePage = () => {
                               <MultiSelectValue
                                 placeholder={`${
                                   isLoadingStaff
-                                    ? "Loading..."
+                                    ? 'Loading...'
                                     : staff && staff.length > 0
-                                    ? "Select staff..."
-                                    : "No staff available"
+                                    ? 'Select staff...'
+                                    : 'No staff available'
                                 }`}
                               />
                             </MultiSelectTrigger>
@@ -310,7 +310,7 @@ export const ServicePage = () => {
                                 <>
                                   <MultiSelectItem value="none">
                                     <Link
-                                      to={"/admin/staff/new"}
+                                      to={'/admin/staff/new'}
                                       className="text-blue-500"
                                     >
                                       Create a new staff
@@ -353,7 +353,7 @@ export const ServicePage = () => {
                   disabled={mutation.isPending}
                   loading={mutation.isPending}
                 >
-                  <SaveIcon /> {id === "new" ? "Save" : "Update"}
+                  <SaveIcon /> {id === 'new' ? 'Save' : 'Update'}
                 </Button>
               </CardFooter>
             </Card>
