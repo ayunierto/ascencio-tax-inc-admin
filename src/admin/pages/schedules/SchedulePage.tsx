@@ -1,21 +1,21 @@
-import { useEffect } from "react";
-import { AdminHeader } from "@/admin/components/AdminHeader";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, SaveIcon } from "lucide-react";
-import { Navigate, useNavigate, useParams } from "react-router";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
+import { useEffect } from 'react';
+import { AdminHeader } from '@/admin/components/AdminHeader';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, SaveIcon } from 'lucide-react';
+import { Navigate, useNavigate, useParams } from 'react-router';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
 
-import { useSchedule } from "./hooks/useSchedule";
-import { Loader } from "@/components/Loader";
+import { useSchedule } from './hooks/useSchedule';
+import { Loader } from '@/components/Loader';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
-} from "@/components/ui/card";
-import { Schedule, scheduleSchema } from "./schemas/schedule.schema";
+} from '@/components/ui/card';
+import { Schedule, scheduleSchema } from './schemas/schedule.schema';
 import {
   Form,
   FormControl,
@@ -23,27 +23,27 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import EmptyContent from "@/components/EmptyContent";
-import { useMutations } from "./hooks/useMutations";
+} from '@/components/ui/select';
+import EmptyContent from '@/components/EmptyContent';
+import { useMutations } from './hooks/useMutations';
 
 const weekdays = [
   // 0 (Sunday) to 6 (Saturday)
-  { value: 0, label: "Sunday" },
-  { value: 1, label: "Monday" },
-  { value: 2, label: "Tuesday" },
-  { value: 3, label: "Wednesday" },
-  { value: 4, label: "Thursday" },
-  { value: 5, label: "Friday" },
-  { value: 6, label: "Saturday" },
+  { value: 0, label: 'Sunday' },
+  { value: 1, label: 'Monday' },
+  { value: 2, label: 'Tuesday' },
+  { value: 3, label: 'Wednesday' },
+  { value: 4, label: 'Thursday' },
+  { value: 5, label: 'Friday' },
+  { value: 6, label: 'Saturday' },
 ];
 
 export const SchedulePage = () => {
@@ -53,7 +53,7 @@ export const SchedulePage = () => {
     isLoading,
     isError,
     error,
-  } = useSchedule(id || "new");
+  } = useSchedule(id || 'new');
   const { mutation } = useMutations();
   const navigate = useNavigate();
   const form = useForm<Schedule>({
@@ -83,14 +83,14 @@ export const SchedulePage = () => {
       onSuccess(schedule, variables) {
         toast.success(
           `Schedule ${
-            variables.id === "new" ? "created" : "updated"
+            variables.id === 'new' ? 'created' : 'updated'
           } successfully`
         );
         form.reset(schedule);
         navigate(`/admin/schedules/${schedule.id}`);
       },
       onError: (error) => {
-        toast.error(error.message || "An unexpected error occurred. ");
+        toast.error(error.message || 'An unexpected error occurred. ');
       },
     });
   };
@@ -105,23 +105,23 @@ export const SchedulePage = () => {
     );
   }
   if (isLoading) return <Loader />;
-  if (!schedule) return <Navigate to={"/admin/schedules"} />;
+  if (!schedule) return <Navigate to={'/admin/schedules'} />;
 
   return (
     <div>
       <AdminHeader
         backButton={{
           icon: ArrowLeft,
-          onClick: () => navigate("/admin/schedules"),
+          onClick: () => navigate('/admin/schedules'),
         }}
-        title={id === "new" ? "Add" : "Edit"}
+        title={id === 'new' ? 'Add' : 'Edit'}
         actions={
           <Button
             onClick={form.handleSubmit(onSubmit)}
             loading={mutation.isPending}
             disabled={mutation.isPending}
           >
-            {mutation.isPending ? "" : <SaveIcon />}
+            {mutation.isPending ? '' : <SaveIcon />}
           </Button>
         }
       />
@@ -181,7 +181,7 @@ export const SchedulePage = () => {
                             type="time"
                             className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none w-full"
                             {...field}
-                            value={field.value || ""}
+                            value={field.value || ''}
                             onChange={(e) => field.onChange(e.target.value)}
                           />
                         </FormControl>
@@ -201,7 +201,7 @@ export const SchedulePage = () => {
                             type="time"
                             className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none w-full"
                             {...field}
-                            value={field.value || ""}
+                            value={field.value || ''}
                             onChange={(e) => field.onChange(e.target.value)}
                           />
                         </FormControl>
@@ -217,7 +217,7 @@ export const SchedulePage = () => {
                   disabled={mutation.isPending}
                   loading={mutation.isPending}
                 >
-                  <SaveIcon /> {id === "new" ? "Save" : "Update"}
+                  <SaveIcon /> {id === 'new' ? 'Save' : 'Update'}
                 </Button>
               </CardFooter>
             </Card>

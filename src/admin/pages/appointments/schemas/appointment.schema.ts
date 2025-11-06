@@ -1,11 +1,13 @@
 import z from 'zod';
 
 export const appointmentSchema = z.object({
-  id: z.string(),
+  id: z.string({ required_error: 'ID is required.' }),
   serviceId: z.string().uuid({ message: 'Service must be a valid.' }),
   staffId: z.string().uuid({ message: 'Staff must be a valid.' }),
-  start: z.string().datetime({ message: 'Date must be in ISO8601 format.' }),
-  end: z.string().datetime({ message: 'Date must be in ISO8601 format.' }),
+  start: z
+    .string()
+    .datetime({ message: 'Start date must be in ISO8601 format.' }),
+  end: z.string().datetime({ message: 'End date must be in ISO8601 format.' }),
   timeZone: z.string().refine(
     (val) => {
       try {

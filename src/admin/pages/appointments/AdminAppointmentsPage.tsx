@@ -38,11 +38,18 @@ import { Pagination } from '@/components/Pagination';
 import { DateTime } from 'luxon';
 
 export const AdminAppointmentsPage = () => {
-  const { data: appointments, isLoading, isError, error } = useAppointments();
+  const { data, isLoading, isError, error } = useAppointments();
   const { deleteMutation } = useMutations();
 
+  if (isError)
+    return (
+      <EmptyContent
+        icon={<InfoIcon size={48} className="text-primary" />}
+        title="Error loading appointments"
+        description={error.response?.data?.message || error.message}
+      />
+    );
   if (isLoading) return <Loader />;
-  if (isError) return <div>Error: {error.message}</div>;
 
   const onDelete = async (id: string) => {
     await deleteMutation.mutateAsync(id, {
@@ -72,7 +79,7 @@ export const AdminAppointmentsPage = () => {
         }
       />
       <div className="p-4 overflow-y-auto ">
-        {!appointments || appointments.appointments.length === 0 ? (
+        {!data ? (
           <EmptyContent
             icon={<InfoIcon size={48} className="text-primary" />}
             title="No appointments found"
@@ -100,69 +107,66 @@ export const AdminAppointmentsPage = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {appointments &&
-                      appointments.appointments.map((appointment) => (
-                        <TableRow key={appointment.id}>
-                          <TableCell>
-                            {DateTime.fromISO(appointment.start).toLocaleString(
-                              DateTime.DATETIME_MED_WITH_WEEKDAY
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            {DateTime.fromISO(appointment.end).toLocaleString(
-                              DateTime.DATETIME_MED_WITH_WEEKDAY
-                            )}
-                          </TableCell>
-                          <TableCell>{appointment.service?.name}</TableCell>
-                          <TableCell>{appointment.staff?.firstName}</TableCell>
+                    {data.appointments.map((appointment) => (
+                      <TableRow key={appointment.id}>
+                        <TableCell>
+                          {DateTime.fromISO(appointment.start).toLocaleString(
+                            DateTime.DATETIME_MED_WITH_WEEKDAY
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {DateTime.fromISO(appointment.end).toLocaleString(
+                            DateTime.DATETIME_MED_WITH_WEEKDAY
+                          )}
+                        </TableCell>
+                        <TableCell>{appointment.service?.name}</TableCell>
+                        <TableCell>{appointment.staff?.firstName}</TableCell>
 
-                          <TableCell className="text-center">
-                            <Button variant="ghost" asChild size={'sm'}>
-                              <Link
-                                to={`/admin/appointments/${appointment.id}`}
+                        <TableCell className="text-center">
+                          <Button variant="ghost" asChild size={'sm'}>
+                            <Link to={`/admin/appointments/${appointment.id}`}>
+                              <EditIcon size={16} />
+                            </Link>
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size={'icon'}
+                                disabled={deleteMutation.isPending}
                               >
-                                <EditIcon size={16} />
-                              </Link>
-                            </Button>
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size={'sm'}
-                                  disabled={deleteMutation.isPending}
+                                <Trash2Icon size={16} color="red" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  Are you absolutely sure?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This action cannot be undone. This will
+                                  permanently delete the appointment.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => onDelete(appointment.id)}
                                 >
-                                  <Trash2Icon size={16} color="red" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>
-                                    Are you absolutely sure?
-                                  </AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    This action cannot be undone. This will
-                                    permanently delete the appointment.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() => onDelete(appointment.id)}
-                                  >
-                                    Continue
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                                  Continue
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </CardContent>
 
               <CardFooter className="flex justify-center gap-2">
-                <Pagination totalPages={appointments.pages} />
+                <Pagination totalPages={data.pages} />
               </CardFooter>
             </Card>
           </div>

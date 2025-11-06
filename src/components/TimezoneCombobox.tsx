@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { Check, ChevronDown } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -36,9 +36,19 @@ const commonTimezones = [
   'Asia/Dubai',
 ];
 
-export function TimezoneCombobox() {
+interface TimezoneComboboxProps {
+  className?: string;
+  value?: string;
+  onChange?: (value: string) => void;
+}
+
+export function TimezoneCombobox({
+  className,
+  value: initialValue,
+  onChange,
+}: TimezoneComboboxProps) {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState('');
+  const [value, setValue] = React.useState(initialValue);
   const [showAll, setShowAll] = React.useState(false);
 
   // load navigator timezones
@@ -50,6 +60,12 @@ export function TimezoneCombobox() {
 
   const list = showAll ? allTimezones : commonTimezones;
 
+  const handleSelect = (selected: string) => {
+    setValue(selected);
+    onChange?.(selected);
+    setOpen(false);
+  };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -57,14 +73,14 @@ export function TimezoneCombobox() {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[240px] justify-between"
+          className={` justify-between ${className}`}
         >
           {value ? value : 'Select timezone...'}
-          <ChevronsUpDown className="opacity-50" />
+          <ChevronDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[240px] p-0">
+      <PopoverContent className=" p-0">
         <Command>
           <CommandInput placeholder="Search timezone..." className="h-9" />
           <CommandList>
@@ -74,14 +90,7 @@ export function TimezoneCombobox() {
               heading={showAll ? 'All timezones' : 'Common timezones'}
             >
               {list.map((tz: string) => (
-                <CommandItem
-                  key={tz}
-                  value={tz}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue);
-                    setOpen(false);
-                  }}
-                >
+                <CommandItem key={tz} value={tz} onSelect={handleSelect}>
                   {tz}
                   <Check
                     className={cn(

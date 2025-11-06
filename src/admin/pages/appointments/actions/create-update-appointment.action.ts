@@ -3,9 +3,9 @@ import { AppointmentFormFields } from '../schemas/appointment.schema';
 import { AppointmentResponse } from '../interfaces/appointment.response';
 
 export const createUpdateAppointment = async (
-  serviceLike: Partial<AppointmentFormFields>
+  appointmentLike: Partial<AppointmentFormFields>
 ): Promise<AppointmentResponse> => {
-  const { id, ...rest } = serviceLike;
+  const { id, ...rest } = appointmentLike;
 
   const isCreating = id === 'new';
 

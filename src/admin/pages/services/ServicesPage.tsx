@@ -96,7 +96,7 @@ export const ServicesPage = () => {
                     <TableRow>
                       <TableHead>Image</TableHead>
                       <TableHead>Name</TableHead>
-                      <TableHead>Price</TableHead>
+                      <TableHead>Duration</TableHead>
                       <TableHead>Online</TableHead>
                       <TableHead>State</TableHead>
                       <TableHead className="text-center">Actions</TableHead>

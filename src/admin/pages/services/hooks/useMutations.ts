@@ -1,12 +1,12 @@
-import { AxiosError } from "axios";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from 'axios';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { ServiceResponse } from "../interfaces/service.response";
-import { deleteServiceAction } from "../actions/delete-service.action";
-import { Service } from "../schemas/service.schema";
-import { ServerException } from "@/interfaces/server-exception.response";
-import { createUpdateServiceAction } from "../actions/create-update-service.action";
-import { ServicesResponse } from "../interfaces/services.response";
+import { ServiceResponse } from '../interfaces/service.response';
+import { deleteServiceAction } from '../actions/delete-service.action';
+import { Service } from '../schemas/service.schema';
+import { ServerException } from '@/interfaces/server-exception.response';
+import { createUpdateServiceAction } from '../actions/create-update-service.action';
+import { ServicesResponse } from '../interfaces/services.response';
 
 export const useMutations = () => {
   const queryClient = useQueryClient();
@@ -18,11 +18,11 @@ export const useMutations = () => {
   >({
     mutationFn: createUpdateServiceAction,
     onSuccess: (response) => {
-      queryClient.invalidateQueries({ queryKey: ["services"] });
-      queryClient.setQueryData(["service", response.id], response);
+      queryClient.invalidateQueries({ queryKey: ['services'] });
+      queryClient.setQueryData(['service', response.id], response);
 
       queryClient.setQueryData(
-        ["services"],
+        ['services'],
         (oldList: ServicesResponse): ServicesResponse => {
           if (!oldList) return { services: [response], count: 1, pages: 1 };
 
@@ -53,7 +53,7 @@ export const useMutations = () => {
     mutationFn: deleteServiceAction,
     onSuccess: (_data, id) => {
       queryClient.setQueryData(
-        ["services"],
+        ['services'],
         (oldList: ServicesResponse): ServicesResponse => {
           if (!oldList) return { services: [], count: 0, pages: 0 };
           return {
@@ -63,7 +63,7 @@ export const useMutations = () => {
         }
       );
 
-      queryClient.removeQueries({ queryKey: ["service", id] });
+      queryClient.removeQueries({ queryKey: ['service', id] });
     },
   });
 

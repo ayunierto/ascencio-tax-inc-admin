@@ -57,18 +57,19 @@ export const useMutations = () => {
   >({
     mutationFn: deleteAppointment,
     onSuccess: (_data, id) => {
-      queryClient.setQueryData(
-        ['appointments'],
-        (oldList: AppointmentsResponse): AppointmentsResponse => {
-          if (!oldList) return { appointments: [], count: 0, pages: 0 };
-          return {
-            ...oldList,
-            appointments: oldList.appointments.filter(
-              (appointment) => appointment.id !== id
-            ),
-          };
-        }
-      );
+      // queryClient.setQueryData(
+      //   ['appointments'],
+      //   (oldList: AppointmentsResponse): AppointmentsResponse => {
+      //     if (!oldList) return { appointments: [], count: 0, pages: 0 };
+      //     return {
+      //       ...oldList,
+      //       appointments: oldList.appointments.filter(
+      //         (appointment) => appointment.id !== id
+      //       ),
+      //     };
+      //   }
+      // );
+      queryClient.invalidateQueries({ queryKey: ['appointments'] });
 
       queryClient.removeQueries({ queryKey: ['appointment', id] });
     },
