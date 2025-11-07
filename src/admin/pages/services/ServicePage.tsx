@@ -47,10 +47,10 @@ export const ServicePage = () => {
       address: '',
       isActive: true,
       description: '',
-      duration: 0,
+      durationMinutes: 0,
       isAvailableOnline: false,
       name: '',
-      staff: [],
+      staffIds: [],
     },
   });
 
@@ -63,11 +63,11 @@ export const ServicePage = () => {
         id: service.id,
         isActive: service.isActive,
         name: service.name,
-        duration: service.durationMinutes,
+        durationMinutes: service.durationMinutes,
         description: service.description || '',
         address: service.address,
         isAvailableOnline: service.isAvailableOnline,
-        staff: service.staff.map((s) => s.id),
+        staffIds: service.staff.map((s) => s.id),
       });
     }
   }, [service, form]);
@@ -198,7 +198,7 @@ export const ServicePage = () => {
 
                   <FormField
                     control={form.control}
-                    name="duration"
+                    name="durationMinutes"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Duration (minutes)</FormLabel>
@@ -277,7 +277,7 @@ export const ServicePage = () => {
 
                   <FormField
                     control={form.control}
-                    name="staff"
+                    name="staffIds"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Staff</FormLabel>
