@@ -37,7 +37,6 @@ import { Loader } from '@/components/Loader';
 import { StaffResponse } from '../../staff/interfaces/staff.response';
 import { Textarea } from '@/components/ui/textarea';
 import { ServiceResponse } from '../../services/interfaces/service.response';
-import { Badge } from '@/components/ui/badge';
 
 interface AppointmentFormProps {
   appointment: AppointmentResponse;
@@ -74,7 +73,6 @@ export const AppointmentForm = ({
   slotsError,
   selectedSlot,
   onSlotSelect,
-  scheduledStartUTC,
 }: AppointmentFormProps) => {
   // Watch only what's used in UI here
   const timeZone = form.watch('timeZone');
@@ -223,9 +221,6 @@ export const AppointmentForm = ({
                   />
                 ) : slots && slots.length > 0 ? (
                   slots.map((slot) => {
-                    const isScheduled =
-                      scheduledStartUTC &&
-                      slot.startTimeUTC === scheduledStartUTC;
                     return (
                       <Button
                         type="button"
@@ -240,11 +235,6 @@ export const AppointmentForm = ({
                         {DateTime.fromISO(slot.startTimeUTC)
                           .setZone(timeZone)
                           .toFormat('h:mm a')}
-                        {isScheduled && (
-                          <Badge variant="secondary" className="ml-2">
-                            Current booking
-                          </Badge>
-                        )}
                       </Button>
                     );
                   })
