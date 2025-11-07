@@ -1,26 +1,26 @@
-import { PropsWithChildren } from "react";
-import { RouterProvider } from "react-router";
+import { PropsWithChildren } from 'react';
+import { RouterProvider } from 'react-router';
 import {
   QueryClient,
   QueryClientProvider,
   useQuery,
-} from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+} from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
-import { TooltipProvider } from "./components/ui/tooltip";
-import { Toaster } from "./components/ui/sonner";
-import { appRouter } from "./app.router";
-import { ThemeProvider } from "./components/theme-provider";
-import { useAuthStore } from "./auth/store/useAuthStore";
-import { Loader } from "./components/Loader";
-import { AnimatePresence } from "framer-motion";
+import { TooltipProvider } from './components/ui/tooltip';
+import { Toaster } from './components/ui/sonner';
+import { appRouter } from './app.router';
+import { ThemeProvider } from './components/theme-provider';
+import { useAuthStore } from './auth/store/useAuthStore';
+import { Loader } from './components/Loader';
+import { AnimatePresence } from 'framer-motion';
 
 const queryClient = new QueryClient();
 
 const CheckAuthProvider = ({ children }: PropsWithChildren) => {
   const { checkAuthStatus } = useAuthStore();
   const { isLoading } = useQuery({
-    queryKey: ["auth"],
+    queryKey: ['auth'],
     queryFn: checkAuthStatus,
     retry: false,
     refetchInterval: 1000 * 60 * 5, // 5 minutes
@@ -35,7 +35,8 @@ const CheckAuthProvider = ({ children }: PropsWithChildren) => {
 export const AscencioTaxApp = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="light" storageKey="theme">
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        {' '}
         <TooltipProvider>
           <CheckAuthProvider>
             <AnimatePresence mode="wait">
