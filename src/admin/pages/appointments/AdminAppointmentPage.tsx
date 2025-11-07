@@ -1,8 +1,7 @@
 import { toast } from 'sonner';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Navigate, useNavigate, useParams } from 'react-router';
 import { ArrowLeft, SaveIcon } from 'lucide-react';
+import { useRef } from 'react';
 
 import { AdminHeader } from '@/admin/components/AdminHeader';
 import { Button } from '@/components/ui/button';
@@ -10,12 +9,9 @@ import { Loader } from '@/components/Loader';
 
 import EmptyContent from '@/components/EmptyContent';
 import { useMutations } from './hooks/useMutations';
-import {
-  AppointmentFormFields,
-  appointmentSchema,
-} from './schemas/appointment.schema';
+import { AppointmentFormFields } from './schemas/appointment.schema';
 import { useAppointment } from './hooks/useAppointment';
-import { AppointmentForm } from './components/AppointmentForm';
+import { AppointmentFormContainer } from './components/AppointmentFormContainer';
 import { useServices } from '../services/hooks/useServices';
 
 export const AdminAppointmentPage = () => {
@@ -28,21 +24,13 @@ export const AdminAppointmentPage = () => {
     isError,
     error,
   } = useAppointment(id || 'new');
-  const { data: services, isError: isErrorServices } = useServices(99);
+  const {
+    data: services,
+    isPending: isPendingServices,
+    isError: isErrorServices,
+  } = useServices(99);
   const { mutation } = useMutations();
-
-  const form = useForm<AppointmentFormFields>({
-    resolver: zodResolver(appointmentSchema),
-    defaultValues: {
-      id: id || 'new',
-      comments: '',
-      start: '',
-      end: '',
-      serviceId: '',
-      staffId: '',
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    },
-  });
+  const submitRef = useRef<(() => void) | null>(null);
 
   const onSubmit = async (appointmentLike: Partial<AppointmentFormFields>) => {
     await mutation.mutateAsync(appointmentLike, {
@@ -82,6 +70,7 @@ export const AdminAppointmentPage = () => {
       />
     );
   }
+  if (isPendingServices) return <Loader />;
   if (!services) return <Navigate to={'/admin/appointments'} />;
   if (services.services.length === 0) {
     return (
@@ -107,7 +96,7 @@ export const AdminAppointmentPage = () => {
         title={id === 'new' ? 'Add Appointment' : 'Edit Appointment'}
         actions={
           <Button
-            onClick={form.handleSubmit(onSubmit)}
+            onClick={() => submitRef.current?.()}
             loading={mutation.isPending}
             disabled={mutation.isPending}
           >
@@ -117,12 +106,12 @@ export const AdminAppointmentPage = () => {
       />
 
       <div className="p-2 sm:p-6">
-        <AppointmentForm
+        <AppointmentFormContainer
           onSubmit={onSubmit}
           appointment={appointment}
-          form={form}
           isLoading={mutation.isPending}
           services={services?.services}
+          headerSubmitRef={submitRef}
         />
       </div>
     </div>

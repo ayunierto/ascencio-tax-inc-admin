@@ -28,17 +28,16 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { useEffect, useState } from 'react';
+
 import { DateTime } from 'luxon';
-import { useQuery } from '@tanstack/react-query';
 import { AvailableSlot } from '../interfaces/available-slot.interface';
 import { AxiosError } from 'axios';
 import { ServerException } from '@/interfaces/server-exception.response';
-import { getAvailabilityAction } from '../actions/get-availability.action';
 import { Loader } from '@/components/Loader';
 import { StaffResponse } from '../../staff/interfaces/staff.response';
 import { Textarea } from '@/components/ui/textarea';
 import { ServiceResponse } from '../../services/interfaces/service.response';
+import { Badge } from '@/components/ui/badge';
 
 interface AppointmentFormProps {
   appointment: AppointmentResponse;
@@ -47,6 +46,17 @@ interface AppointmentFormProps {
   form: UseFormReturn<AppointmentFormFields, any, AppointmentFormFields>;
   isLoading: boolean;
   services: ServiceResponse[];
+  // Presentational-only props from container
+  staff: StaffResponse[];
+  date: Date;
+  onDateChange: (date: Date) => void;
+  slots: AvailableSlot[];
+  isSlotsLoading: boolean;
+  isSlotsError: boolean;
+  slotsError?: AxiosError<ServerException> | null;
+  selectedSlot?: AvailableSlot;
+  onSlotSelect: (slot: AvailableSlot) => void;
+  scheduledStartUTC?: string;
 }
 
 export const AppointmentForm = ({
@@ -55,90 +65,20 @@ export const AppointmentForm = ({
   appointment,
   isLoading,
   services,
+  staff,
+  date,
+  onDateChange,
+  slots,
+  isSlotsLoading,
+  isSlotsError,
+  slotsError,
+  selectedSlot,
+  onSlotSelect,
+  scheduledStartUTC,
 }: AppointmentFormProps) => {
-  const [date, setDate] = useState<Date>(new Date());
-  const [staff, setStaff] = useState<StaffResponse[]>([]);
-  const [selectedSlot, setSelectedSlot] = useState<AvailableSlot>();
-
-  console.log({ appointment });
-
-  const serviceId = form.watch('serviceId');
-  const staffId = form.watch('staffId');
+  // Watch only what's used in UI here
   const timeZone = form.watch('timeZone');
-
-  // Set staff when services change
-  useEffect(() => {
-    if (!services || !serviceId) return;
-    setStaff(services.find((service) => service.id === serviceId)?.staff || []);
-  }, [services, serviceId]);
-
-  const {
-    isPending: isPendingAvailability,
-    isRefetching: isRefetchingAvailability,
-    isError: isErrorAvailability,
-    error: availabilityError,
-    refetch,
-    data: availabilityData,
-  } = useQuery<AvailableSlot[], AxiosError<ServerException>>({
-    queryKey: ['availability'],
-    queryFn: async () => {
-      return await getAvailabilityAction({
-        serviceId,
-        staffId,
-        date: DateTime.fromJSDate(date).toISODate() || '',
-        timeZone,
-      });
-    },
-    enabled: serviceId !== '' && staffId !== '' && timeZone !== '' && !!date,
-    retry: false,
-    initialData: [
-      {
-        availableStaff: [appointment.staff!],
-        startTimeUTC: appointment.start,
-        endTimeUTC: appointment.end,
-      },
-    ],
-  });
-
-  useEffect(() => {
-    if (!serviceId || !staffId || !date || !timeZone) return; // If no service or date is selected, do not fetch availability
-    // form.resetField("time"); // Reset time when service or date changes
-    // Refetch availability when serviceId, staffId, or date changes
-    refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [serviceId, staffId, date, timeZone]);
-
-  const handleDateChange = (date: Date) => {
-    setDate(date);
-  };
-
-  const handleSlotSelect = (slot: AvailableSlot) => {
-    setSelectedSlot(slot);
-    form.setValue('start', slot.startTimeUTC);
-    form.setValue('end', slot.endTimeUTC);
-  };
-
-  useEffect(() => {
-    if (appointment && appointment.id !== 'new') {
-      form.reset({
-        id: appointment.id,
-        comments: appointment.comments || '',
-        start: appointment.start || '',
-        end: appointment.end || '',
-        serviceId: appointment.service?.id || '',
-        staffId: appointment.staff?.id || '',
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      });
-
-      setSelectedSlot({
-        startTimeUTC: appointment.start || '',
-        endTimeUTC: appointment.end || '',
-        availableStaff: [appointment.staff!],
-      });
-    }
-  }, [appointment, form, services, availabilityData]);
-
-  console.log({ selectedSlot });
+  // React Query is managed by the container; this component is presentational only.
 
   return (
     <Form {...form}>
@@ -156,7 +96,6 @@ export const AppointmentForm = ({
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
-                        defaultValue={appointment.service?.id}
                       >
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select services..." />
@@ -189,7 +128,6 @@ export const AppointmentForm = ({
                         onValueChange={field.onChange}
                         value={field.value}
                         disabled={staff.length === 0}
-                        defaultValue={appointment.staff?.id}
                       >
                         <SelectTrigger className="w-full">
                           <SelectValue
@@ -240,7 +178,7 @@ export const AppointmentForm = ({
                       <Calendar
                         mode="single"
                         selected={date}
-                        onSelect={handleDateChange}
+                        onSelect={onDateChange}
                         required
                       />
                     </PopoverContent>
@@ -265,41 +203,51 @@ export const AppointmentForm = ({
 
               <div className="col-span-full grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6">
                 {/* Loader */}
-                {isRefetchingAvailability || isPendingAvailability ? (
+                {isSlotsLoading ? (
                   <Loader
                     className="col-span-full"
                     text="Loading available slots..."
                   />
-                ) : isErrorAvailability ? (
+                ) : isSlotsError ? (
                   // If there's an error, show the error message
                   <EmptyContent
                     className="col-span-full"
                     title="No available slots"
                     description={
-                      availabilityError.code === '404'
-                        ? availabilityError?.response?.data?.message ||
-                          availabilityError?.message ||
+                      slotsError?.code === '404'
+                        ? slotsError?.response?.data?.message ||
+                          slotsError?.message ||
                           'Failed to load available slots'
                         : 'Please select service, staff, date, and time zone to see available slots.'
                     }
                   />
-                ) : availabilityData && availabilityData.length > 0 ? (
-                  availabilityData.map((slot) => (
-                    <Button
-                      type="button"
-                      key={slot.startTimeUTC}
-                      variant={
-                        selectedSlot?.startTimeUTC === slot.startTimeUTC
-                          ? 'default'
-                          : 'outline'
-                      }
-                      onClick={() => handleSlotSelect(slot)}
-                    >
-                      {DateTime.fromISO(slot.startTimeUTC)
-                        .setZone(timeZone)
-                        .toFormat('h:mm a')}
-                    </Button>
-                  ))
+                ) : slots && slots.length > 0 ? (
+                  slots.map((slot) => {
+                    const isScheduled =
+                      scheduledStartUTC &&
+                      slot.startTimeUTC === scheduledStartUTC;
+                    return (
+                      <Button
+                        type="button"
+                        key={slot.startTimeUTC}
+                        variant={
+                          selectedSlot?.startTimeUTC === slot.startTimeUTC
+                            ? 'default'
+                            : 'outline'
+                        }
+                        onClick={() => onSlotSelect(slot)}
+                      >
+                        {DateTime.fromISO(slot.startTimeUTC)
+                          .setZone(timeZone)
+                          .toFormat('h:mm a')}
+                        {isScheduled && (
+                          <Badge variant="secondary" className="ml-2">
+                            Current booking
+                          </Badge>
+                        )}
+                      </Button>
+                    );
+                  })
                 ) : (
                   <EmptyContent
                     title="No available slots"

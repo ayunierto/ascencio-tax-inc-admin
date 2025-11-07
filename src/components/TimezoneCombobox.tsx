@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { Check, ChevronDown } from 'lucide-react';
+import { DateTime } from 'luxon';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -65,6 +66,37 @@ export function TimezoneCombobox({
     onChange?.(selected);
     setOpen(false);
   };
+
+  // Function to convert Etc/GMT offsets to valid timezones dynamically
+  const convertEtcGmtToValidTimezone = (etcGmt: string): string => {
+    if (etcGmt.startsWith('Etc/GMT')) {
+      const offset = parseInt(etcGmt.replace('Etc/GMT', ''), 10);
+      if (!isNaN(offset)) {
+        const now = DateTime.now().setZone(
+          `UTC${offset > 0 ? '-' : '+'}${Math.abs(offset)}`
+        );
+        return now.zoneName || 'UTC'; // Default to 'UTC' if zoneName is null
+      }
+    }
+    return etcGmt; // Return the original value if no conversion is needed
+  };
+
+  // Normalize the timezone name using Luxon
+  React.useEffect(() => {
+    // Use Luxon to normalize the timezone name
+    const normalizedValue = DateTime.now().setZone(
+      initialValue || 'local'
+    ).zoneName;
+    setValue(normalizedValue || undefined);
+  }, [initialValue, allTimezones]);
+
+  // Normalize the timezone name using the conversion function
+  React.useEffect(() => {
+    const normalizedValue = convertEtcGmtToValidTimezone(
+      initialValue || 'local'
+    );
+    setValue(normalizedValue);
+  }, [initialValue, allTimezones]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
