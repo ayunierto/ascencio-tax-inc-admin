@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Navigate, useNavigate, useParams } from "react-router";
-import { ArrowLeft, ArrowRight, ImageIcon, SaveIcon } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Navigate, useNavigate, useParams } from 'react-router';
+import { ArrowLeft, ArrowRight, ImageIcon, SaveIcon } from 'lucide-react';
 
-import { AdminHeader } from "@/admin/components/AdminHeader";
-import { Button } from "@/components/ui/button";
-import { Loader } from "@/components/Loader";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { AdminHeader } from '@/admin/components/AdminHeader';
+import { Button } from '@/components/ui/button';
+import { Loader } from '@/components/Loader';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -16,11 +16,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import EmptyContent from "@/components/EmptyContent";
-import { useMutations } from "./hooks/useMutations";
-import { Switch } from "@/components/ui/switch";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import EmptyContent from '@/components/EmptyContent';
+import { useMutations } from './hooks/useMutations';
+import { Switch } from '@/components/ui/switch';
 import {
   MultiSelect,
   MultiSelectContent,
@@ -28,32 +28,33 @@ import {
   MultiSelectItem,
   MultiSelectTrigger,
   MultiSelectValue,
-} from "@/components/ui/multi-select";
+} from '@/components/ui/multi-select';
 
-import { User, userSchema } from "./schemas/user.schema";
-import { useUser } from "./hooks/useUser";
-import { Role } from "./interfaces/role.enum";
+import { User, userSchema } from './schemas/user.schema';
+import { useUser } from './hooks/useUser';
+import { Role } from './interfaces/role.enum';
 
 export const UserPage = () => {
   const { id } = useParams();
-  const { data: user, isLoading, isError, error } = useUser(id || "new");
+  const { data: user, isLoading, isError, error } = useUser(id || 'new');
   const { mutation } = useMutations();
   const navigate = useNavigate();
   const [newImage, setNewImage] = useState<File | null>(null);
   const form = useForm<User>({
     resolver: zodResolver(userSchema),
     defaultValues: {
-      id: "new",
-      countryCode: "",
-      email: "",
-      firstName: "",
+      id: 'new',
+      countryCode: '',
+      email: '',
+      firstName: '',
       isActive: true,
       isEmailVerified: false,
-      lastName: "",
-      locale: "",
+      lastName: '',
+      locale: '',
       password: undefined,
-      phoneNumber: "",
+      phoneNumber: '',
       roles: [],
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
   });
 
@@ -68,12 +69,14 @@ export const UserPage = () => {
         lastName: user.lastName,
         email: user.email,
         isActive: user.isActive,
-        countryCode: user.countryCode || "",
+        countryCode: user.countryCode || '',
         isEmailVerified: user.isEmailVerified,
-        locale: user.locale || "",
-        phoneNumber: user.phoneNumber || "",
+        locale: user.locale || '',
+        phoneNumber: user.phoneNumber || '',
         roles: user.roles,
         password: undefined,
+        timeZone:
+          user.timeZone || Intl.DateTimeFormat().resolvedOptions().timeZone,
       });
     }
   }, [user, form]);
@@ -82,7 +85,7 @@ export const UserPage = () => {
     await mutation.mutateAsync(userLike, {
       onSuccess(user, variables) {
         toast.success(
-          `User ${variables.id === "new" ? "created" : "updated"} successfully`
+          `User ${variables.id === 'new' ? 'created' : 'updated'} successfully`
         );
         setNewImage(null);
         navigate(`/admin/users/${user.id}`);
@@ -91,7 +94,7 @@ export const UserPage = () => {
         toast.error(
           error.response?.data?.message ||
             error.message ||
-            "An unexpected error occurred."
+            'An unexpected error occurred.'
         );
       },
     });
@@ -107,11 +110,11 @@ export const UserPage = () => {
     );
   }
   if (isLoading) return <Loader />;
-  if (!user) return <Navigate to={"/admin/users"} />;
+  if (!user) return <Navigate to={'/admin/users'} />;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    form.setValue("imageFile", file);
+    form.setValue('imageFile', file);
     setNewImage(file || null);
   };
 
@@ -120,16 +123,16 @@ export const UserPage = () => {
       <AdminHeader
         backButton={{
           icon: ArrowLeft,
-          onClick: () => navigate("/admin/users"),
+          onClick: () => navigate('/admin/users'),
         }}
-        title={id === "new" ? "Add User" : "Edit User"}
+        title={id === 'new' ? 'Add User' : 'Edit User'}
         actions={
           <Button
             onClick={form.handleSubmit(onSubmit)}
             loading={mutation.isPending}
             disabled={mutation.isPending}
           >
-            {mutation.isPending ? "" : <SaveIcon />}
+            {mutation.isPending ? '' : <SaveIcon />}
           </Button>
         }
       />
@@ -141,7 +144,7 @@ export const UserPage = () => {
               <CardContent className="flex flex-col gap-4 border-b pb-4 md:flex-row ">
                 <div className="flex items-center gap-4 mx-auto">
                   <img
-                    src={user.imageUrl || "/logo.png"}
+                    src={user.imageUrl || '/logo.png'}
                     alt="User Image"
                     className="w-20 h-20 object-cover rounded-md "
                   />
@@ -243,7 +246,7 @@ export const UserPage = () => {
                           <Input
                             placeholder="******"
                             {...field}
-                            required={id === "new"}
+                            required={id === 'new'}
                           />
                         </FormControl>
 
@@ -309,7 +312,7 @@ export const UserPage = () => {
                         <FormControl>
                           <div className="flex items-center justify-between border border-input h-9 rounded-md px-3">
                             <p className="text-sm">
-                              {field.value ? "Active" : "Inactive"}
+                              {field.value ? 'Active' : 'Inactive'}
                             </p>
                             <Switch
                               checked={field.value}
@@ -362,7 +365,7 @@ export const UserPage = () => {
                         <FormControl>
                           <div className="flex items-center justify-between border border-input h-9 rounded-md px-3">
                             <p className="text-sm">
-                              {field.value ? "Verified" : "Not Verified"}
+                              {field.value ? 'Verified' : 'Not Verified'}
                             </p>
                             <Switch
                               checked={field.value}
@@ -382,7 +385,7 @@ export const UserPage = () => {
                   disabled={mutation.isPending}
                   loading={mutation.isPending}
                 >
-                  <SaveIcon /> {id === "new" ? "Save" : "Update"}
+                  <SaveIcon /> {id === 'new' ? 'Save' : 'Update'}
                 </Button>
               </CardFooter>
             </Card>

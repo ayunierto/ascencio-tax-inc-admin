@@ -52,16 +52,7 @@ export const useMutations = () => {
   >({
     mutationFn: deleteServiceAction,
     onSuccess: (_data, id) => {
-      queryClient.setQueryData(
-        ['services'],
-        (oldList: ServicesResponse): ServicesResponse => {
-          if (!oldList) return { services: [], count: 0, pages: 0 };
-          return {
-            ...oldList,
-            services: oldList.services.filter((service) => service.id !== id),
-          };
-        }
-      );
+      queryClient.invalidateQueries({ queryKey: ['services'] });
 
       queryClient.removeQueries({ queryKey: ['service', id] });
     },

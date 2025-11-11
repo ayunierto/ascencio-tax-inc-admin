@@ -57,9 +57,9 @@ export const SettingsPage = () => {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between space-x-2">
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col items-start gap-2">
                 <Label htmlFor="theme-selector">Theme</Label>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-xs text-muted-foreground">
                   Choose your preferred color theme
                 </span>
               </div>
